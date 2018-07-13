@@ -82,7 +82,7 @@ class Booking extends React.Component {
                                  
                                    <h1>events for the day of {this.state.booking.startDate.format('MM-DD-YYYY')}</h1> 
                                    {this.state.appointments.map( appointment => {
-                                        if ( appointment.date !== this.state.booking.startDate.format('MM-DD-YYYY') ) {
+                                        if ( appointment.date === this.state.booking.startDate.format('YYYY-MM-DD') ) {
                                             console.log(this.state.booking.startDate.format('MM-DD-YYYY'))
                                             console.log("text")
                                             console.log(appointment.date)
