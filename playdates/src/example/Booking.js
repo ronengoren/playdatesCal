@@ -34,10 +34,13 @@ class Booking extends React.Component {
     componentDidMount() {
         axios.get('http://localhost:3001/api/v1/appointments.json')
         .then(response => {
-            console.log(response)
+            // console.log("reponse")
+            // console.log(response.data[0].date)
             this.setState({
                 appointments: response.data
             })
+            // console.log(response.data[0].date + "    " + response.data[0].body)
+
         })
         .catch(error => console.log(error))
     }
@@ -48,7 +51,7 @@ class Booking extends React.Component {
     }
     addNewEvent(title, body, date) {
         date = this.state.booking.startDate.format('YYYY-MM-DD')
-        console.log("date" + date)
+        // console.log("date" + date)
         axios.post( 'http://localhost:3001/api/v1/appointments', 
         { appointment: {title, body, date} })
         .then(response => {
@@ -71,7 +74,7 @@ class Booking extends React.Component {
                             <div className='loader__container'>
                                 <div className='content__header'>
                                     New Booking for date:  {this.state.booking.startDate.format('MM-DD-YYYY')}
-                                    {console.log(this.state.booking.startDate.format('MM-DD-YYYY'))}
+                                    {/* {console.log(this.state.booking.startDate.format('MM-DD-YYYY'))} */}
                                     <button type="button" className='content__header__button' onClick={this.onCloseBound}>×</button>
                                 </div>
                                 <NewEventForm onNewEvent={this.addNewEvent} date={this.date} />
@@ -79,6 +82,10 @@ class Booking extends React.Component {
                                  
                                    <h1>events for the day of {this.state.booking.startDate.format('MM-DD-YYYY')}</h1> 
                                    {this.state.appointments.map( appointment => {
+                                        if ( appointment.date !== this.state.booking.startDate.format('MM-DD-YYYY') ) {
+                                            console.log(this.state.booking.startDate.format('MM-DD-YYYY'))
+                                            console.log("text")
+                                            console.log(appointment.date)
                                     return (
                                   <div className="single-list" key={appointment.id}><br/>
                                    New Booking for date:  {this.state.booking.startDate.format('MM-DD-YYYY')}
@@ -87,6 +94,7 @@ class Booking extends React.Component {
                                   <p>date: {appointment.date}</p>
                                  </div>
                                   )
+                                }
                                       })}
                                 </div>
                             </div>
