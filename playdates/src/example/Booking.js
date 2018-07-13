@@ -31,16 +31,16 @@ class Booking extends React.Component {
 
         this.addNewEvent = this.addNewEvent.bind(this)
     }
-    // componentDidMount() {
-    //     axios.get('http://localhost:3001/api/v1/appointments.json')
-    //     .then(response => {
-    //         console.log(response)
-    //         this.setState({
-    //             appointments: response.data
-    //         })
-    //     })
-    //     .catch(error => console.log(error))
-    // }
+    componentDidMount() {
+        axios.get('http://localhost:3001/api/v1/appointments.json')
+        .then(response => {
+            console.log(response)
+            this.setState({
+                appointments: response.data
+            })
+        })
+        .catch(error => console.log(error))
+    }
     
 
     handleChange(event) {
@@ -75,6 +75,20 @@ class Booking extends React.Component {
                                     <button type="button" className='content__header__button' onClick={this.onCloseBound}>×</button>
                                 </div>
                                 <NewEventForm onNewEvent={this.addNewEvent} date={this.date} />
+                                <div>
+                                 
+                                   <h1>events for the day of {this.state.booking.startDate.format('MM-DD-YYYY')}</h1> 
+                                   {this.state.appointments.map( appointment => {
+                                    return (
+                                  <div className="single-list" key={appointment.id}><br/>
+                                   New Booking for date:  {this.state.booking.startDate.format('MM-DD-YYYY')}
+                                   <h4>title: {appointment.title}</h4>
+                                  <p>body: {appointment.body}</p>
+                                  <p>date: {appointment.date}</p>
+                                 </div>
+                                  )
+                                      })}
+                                </div>
                             </div>
                         </Container>
                     )

@@ -61,16 +61,7 @@ class Calendar extends React.Component {
             appointments: {}
         }
     }
-    componentDidMount() {
-        axios.get('http://localhost:3001/api/v1/appointments.json')
-        .then(response => {
-            console.log(response)
-            this.setState({
-                appointments: response.data
-            })
-        })
-        .catch(error => console.log(error))
-    }
+
 
     componentWillReceiveProps(nextProps) {
         if (!isEqual(this.state.bookings, nextProps.bookings)) {

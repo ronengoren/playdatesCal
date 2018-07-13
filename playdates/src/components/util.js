@@ -1,7 +1,22 @@
 import moment from 'moment';
 import {find, filter} from 'lodash';
 
+export const appointments = [
+    {
+        componentDidMount() {
+            axios.get('http://localhost:3001/api/v1/appointments.json')
+            .then(response => {
+                console.log(response)
+                this.setState({
+                    appointments: response.data
+                })
+            })
 
+        } 
+            }
+
+    
+]
 
 export function getDateTime(date, time) {
     const values = time.split(':');
@@ -24,11 +39,17 @@ export function getBookingsForMonth(bookings, date) {
 
 export function getTimesliceForDay(timeSlices, timeExceptions, date) {
     const current = moment(date.format('L'));
+    // if (current == current) {
+    //     console.log(current)
+    // }
+
     const exception = find(timeExceptions, x => current.isBetween(moment(x.startDate), moment(x.endDate), null, '[]'));
+
     if (exception) {
         return { date: current.clone(), start: exception.startTime, end: exception.endTime, off: exception.off };
     } else {
         const timeSlice = find(timeSlices, x => x.day === date.format('dddd'));
+
         return timeSlice ? { date: current.clone(), start: timeSlice.start, end: timeSlice.end } : undefined;
     }
 }
@@ -102,7 +123,7 @@ export function getSizeType(size) {
 
 export function getSizeModifier(size) {
     if (size.width < 480) {
-        return '--medium';
+        return '--big';
     } else if (size.width < 1024) {
         return '--medium';
     }
