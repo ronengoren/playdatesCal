@@ -29,6 +29,9 @@ export default class CalendarHeader extends React.Component {
     render() {
         const sizeModifier = 'rbc-header' + getSizeModifier(this.props.size);
         return (
+            <div className="playdates">
+                <h1>PLAYDates</h1>
+           
             <div className={'rbc-header ' + sizeModifier}>
                 <DateSelector view={this.state.view}
                               date={this.state.date}
@@ -40,6 +43,7 @@ export default class CalendarHeader extends React.Component {
                               change={this.props.viewChanged}
                               resources={this.props.resources['view']}
                               size={this.props.size} />
+            </div>
             </div>
         );
     }

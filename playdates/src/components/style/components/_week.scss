@@ -1,3 +1,4 @@
+
 .rbc-week {
     &--small,
     &--medium {
@@ -9,6 +10,9 @@
         .day {
             flex: 1;
             width: 0;
+            .musix {
+                display: none;
+            }
 
             &__header {
                 height: 40px;

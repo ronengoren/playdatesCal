@@ -1,6 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import {find, isEqual} from 'lodash';
+import axios from 'axios';
 
 import Month from "./Month";
 import Day from "./Day";
@@ -14,9 +15,11 @@ export default class CalendarBody extends React.Component {
             this.props.slotClicked(startDate);
         }
     }
+   
 
     renderDayView() {
         return (
+               
             <Day onClick={this.props.slotClicked}
                 date={this.props.date}
                 canOpenBookedSlot={this.props.canViewBooking}
@@ -27,6 +30,8 @@ export default class CalendarBody extends React.Component {
                 view={this.props.view}
                 size={this.props.size} />
         )
+        
+        
     }
 
     renderWeekView() {

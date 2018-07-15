@@ -6,6 +6,10 @@ import {assign, find, times} from 'lodash';
 import Slot from './Slot';
 import {getDateTime, getStyle} from '../util';
 import {ViewType} from '../constant';
+import axios from 'axios';
+
+
+
 
 export default class Day extends React.Component {
     startDiary = '08:00';
@@ -16,6 +20,13 @@ export default class Day extends React.Component {
         timeSlot: 30,
         noHeader: false
     }
+    constructor(){
+        super();
+        this.state = {
+            songs: []
+        }
+    }
+   
 
     createSlot(key, booking, numberOfColumn, numberOfSlot, clickable = true) {
         const style = getStyle(this.props.view, numberOfColumn, numberOfSlot);
@@ -48,7 +59,64 @@ export default class Day extends React.Component {
             startDate: booking.startDate.local(),
             endDate: booking.endDate.local()
         }) : undefined;
+       
     }
+    
+    componentDidMount()  {
+        var day = this.props.date.format('DD')
+        var month = this.props.date.format('MM')
+        var year = this.props.date.format('YYYY')
+        var min = year - 90
+        var randomYear = Math.floor(Math.random() * (year - min + 1)) + min;
+        var yearsago = year - randomYear
+        var release_date_min = randomYear + month + day;
+        console.log("hello" + release_date_min)
+        var release_date_max = randomYear + month + day;
+        console.log(day)
+        console.log(month)
+        console.log(year)
+        console.log(randomYear)
+        console.log(yearsago)
+
+
+
+       
+  
+        axios.get('https://api.musixmatch.com/ws/1.1/track.search', {
+            params: {
+              apikey: "d2534efb46fbe28c49449d58f2018e9d",
+              f_track_release_group_first_release_date_min: release_date_min,
+              f_track_release_group_first_release_date_max: release_date_max,
+              format: "JSON",
+              headers:{
+                'Access-Control-Allow-Origin':'*'
+                },
+              
+    
+            }
+          })
+      
+          .then((res) => {
+              this.setState(()=>{  
+                  return {
+                      songs: res.data
+                  }
+              })
+            const albums = "Album Title: " + res.data.message.body.track_list[5].track.album_name;
+            const artist = " Artist: " + res.data.message.body.track_list[5].track.artist_name;
+            const track = " Track Name: " + res.data.message.body.track_list[5].track.track_name;
+            const first_release_date = " First release date: " + res.data.message.body.track_list[5].track.first_release_date;
+            var yearsago = year - randomYear
+
+            this.setState({albums, artist, track, first_release_date, yearsago});
+          //   console.log(res.data.message.body.track_list)
+            console.log(albums)
+          })
+          .catch((error) => {
+            // console.log(error);
+        });
+    
+      }
 
     isDayOff() {
         return this.props.timeSlice &&
@@ -79,6 +147,7 @@ export default class Day extends React.Component {
                     <div className='day__header'>
                         <div className='day__header--important'>{this.props.date.format('DD')}</div>
                         <div>{this.props.date.format('dddd')}</div>
+
                     </div>
                 )
             }
@@ -198,6 +267,16 @@ export default class Day extends React.Component {
         return (
             <div className='day'>
                 {this.renderHeader()}
+                <div className="musix">
+                <p>This Song was released today {this.state.yearsago} years ago!</p> 
+                <p>{this.state.albums}</p> 
+                <p>{this.state.artist}</p> 
+                <p>{this.state.track}</p> 
+                <p>{this.state.first_release_date}</p> 
+                </div>
+
+
+
                 <div className='day__details'>
                     {slots}
                 </div>
