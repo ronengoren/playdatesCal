@@ -58,3 +58,20 @@
         }
     }
 }
+
+.app-wrapper {
+    float: none;
+    margin: 0 auto;
+}
+.album {
+    transition: all 0.4s ease-out;
+    margin: 10px 0;
+    cursor: pointer;
+}
+.album img {
+    width: auto;
+    height: 116px;
+}
+.playing {
+    opacity: 0.2;
+}

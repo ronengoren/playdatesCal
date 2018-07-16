@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import moment from 'moment';
 import bem from 'bem-classname';
 import {assign, find, times} from 'lodash';
@@ -20,11 +20,14 @@ export default class Day extends React.Component {
         timeSlot: 30,
         noHeader: false
     }
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
         this.state = {
-            songs: []
+            track: null  // my response.
+          
+      
         }
+     
     }
    
 
@@ -101,22 +104,81 @@ export default class Day extends React.Component {
                   return {
                       songs: res.data
                   }
+                  
+                 
               })
-            const albums = "Album Title: " + res.data.message.body.track_list[5].track.album_name;
-            const artist = " Artist: " + res.data.message.body.track_list[5].track.artist_name;
-            const track = " Track Name: " + res.data.message.body.track_list[5].track.track_name;
-            const first_release_date = " First release date: " + res.data.message.body.track_list[5].track.first_release_date;
+            const albums = res.data.message.body.track_list[5].track.album_name;
+            const artistname = res.data.message.body.track_list[5].track.artist_name;
+            const track = res.data.message.body.track_list[5].track.track_name;
+            const first_release_date = res.data.message.body.track_list[5].track.first_release_date;
             var yearsago = year - randomYear
+            this.setState({albums, artistname, track, first_release_date, yearsago});
+            this.search()
 
-            this.setState({albums, artist, track, first_release_date, yearsago});
+            // console.log('this.state', this.state);
+            // const BASE_URL = 'https://api.spotify.com/v1/search?';
+            // const FETCH_URL = BASE_URL + 'q=' + this.state.track + '&type=track&limit=1';
+    //         const FETCH_URL = BASE_URL + 'q=album:' + this.state.albums + '%20track' + this.state.track + '&type=track' ;
+
+    //         console.log(FETCH_URL)
+    //         var accessToken = 'BQB2YUTdj6MUk_wFD4rDEYEPr0v7b41I9TCMN4Buw2WHBcoEc4oPfZekrY7FpHNKx8HGtVespQSCBm3xCkymn_ABg45UeDUMvLtSQqDP0E3cSJKt06Gb0SP0WMeQ2tTlBY50RSHzQokt8zD8NjjdyfvNmNnhcd0vCZwgxg'
+    //         var myOptions = {
+    //             method: 'GET',
+    //             headers: {
+    //               'Authorization': 'Bearer ' + accessToken
+    //             },
+    //             mode: 'cors',
+    //             cache: 'default'
+    //           }
+    //           fetch(FETCH_URL, myOptions)
+    //           .then(response => response.json())
+    //           .then(json => {
+    //           const spotifyTrack = json.tracks.items[0];   
+    //           console.log(spotifyTrack)     
+
+    //           console.log(spotifyTrack)     
+    //           this.setState({ spotifyTrack });
+    //   })
           //   console.log(res.data.message.body.track_list)
-            console.log(albums)
+            // console.log(track)
           })
           .catch((error) => {
             // console.log(error);
         });
     
       }
+
+  
+
+      search(){
+        console.log('this.state', this.state);
+        const BASE_URL = 'https://api.spotify.com/v1/search?';
+        const FETCH_URL = BASE_URL + 'q=album:' + this.state.albums + '%20track:' + this.state.track + '&type=track&limit=1' ;
+        // console.log(FETCH_URL)
+        var accessToken = 'BQAgI9wA6Od1mVHqosO_EHAsW9JjLYmyr-BNGRXZhK-oW5ltvOYgc7JPiYO0Cng0Q9qLZllMu9P-kBPwYPjrHjkeOuVISuaoNIfn3DrBVkG6DDfpSAjwAt5fDQQEy1-HPj71xUnoIkLnJXvh_78clrnFIj7eQ2s-ieO03Q'
+        var myOptions = {
+            method: 'GET',
+            headers: {
+              'Authorization': 'Bearer ' + accessToken
+            },
+            mode: 'cors',
+            cache: 'default'
+          }
+          fetch(FETCH_URL, myOptions)
+      .then(response => response.json())
+      .then(json => {
+        const spotifyTrack = json.tracks.items[0].external_urls.spotify;   
+        console.log(spotifyTrack
+            
+        )     
+
+        this.setState({ spotifyTrack });
+        // console.log({spotifyTrack})     
+        // console.log(spotifyTrack)     
+
+      })
+      }
+     
 
     isDayOff() {
         return this.props.timeSlice &&
@@ -157,6 +219,15 @@ export default class Day extends React.Component {
     }
 
     render() {
+        let  spotifyTrack = {
+            spotifyTrack: ''
+        }
+        let trackname = {
+            name: ''
+          };
+          if (this.state.track !== null) {
+            trackname = this.state.track;
+          }
         let slots = [];
 
         if (this.props.date) {
@@ -269,12 +340,28 @@ export default class Day extends React.Component {
                 {this.renderHeader()}
                 <div className="musix">
                 <p>This Song was released today {this.state.yearsago} years ago!</p> 
-                <p>{this.state.albums}</p> 
-                <p>{this.state.artist}</p> 
-                <p>{this.state.track}</p> 
-                <p>{this.state.first_release_date}</p> 
+                <p>album: {this.state.albums}</p> 
+                <p>artist: {this.state.artistname}</p> 
+                <p>track: {this.state.track}</p> 
+                <p>release date: {this.state.first_release_date}</p> 
+                </div>
+                
+                <div>
+
+                     {/* <input type="text" 
+              onChange={event => { this.setState({ query: event.target.value }) }}
+            className="form-control" placeholder="Search for..." />
+             <button 
+              onClick={()=> this.search()}
+               className="btn btn-default" type="button">Go!</button> */}
                 </div>
 
+ <div>
+          <div className="spotifylink"> 
+          <a href={this.state.spotifyTrack}>Listen to this song on Spotify</a>
+           </div>
+          {/* <div> {artist.followers.total} </div> */}
+        </div>
 
 
                 <div className='day__details'>
