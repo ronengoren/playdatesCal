@@ -16,6 +16,7 @@ class Booking extends React.Component {
     onSlotChoosenBound = this.onSlotChoosen.bind(this);
     onCloseBound = this.onClose.bind(this);
     onSubmitBound = this.onSubmit.bind(this);
+    
     constructor(props) {
         super(props);
 
@@ -26,7 +27,7 @@ class Booking extends React.Component {
             appointments: [{
                 title: "", 
                 body: "",
-                date: ""
+                startDate: ""
             } ],
             editingEventId: null
         };
@@ -38,14 +39,18 @@ class Booking extends React.Component {
         this.editEvent = this.editEvent.bind(this)
     }
     componentDidMount() {
-        axios.get('https://appointmentsapi.herokuapp.com/api/v1/appointments.json')
+        axios.get('http://localhost:3001/api/v1/appointments')
         .then(response => {
-            // console.log("reponse")
+            console.log(response)
             // console.log(response.data[0].date)
             this.setState({
-                appointments: response.data
+                appointments: [{
+                    title: "", 
+                    body: "",
+                    startDate: ""
+                } ],
             })
-            // console.log(response.data[0].date + "    " + response.data[0].body)
+            console.log(response.data)
 
         })
         .catch(error => console.log(error))
@@ -55,22 +60,33 @@ class Booking extends React.Component {
     handleChange(event) {
         this.setState({ [event.target.name]: event.target.value});
     }
-    addNewEvent(title, body, date) {
-        date = this.state.booking.startDate.format('YYYY-MM-DD')
-        // console.log("date" + date)
-        axios.post( 'https://appointmentsapi.herokuapp.com/api/v1/appointments', 
-        { appointment: {title, body, date} })
+    addNewEvent(title, body, startDate) {
+        // startDate = this.state.booking.startDate.format("ddd MMM D YYYY, h:mm:ss")
+        // console.log(startDate)
+        // console.log("date")
+
+        // console.log(startDate)
+
+        axios.post( 'http://localhost:3001/api/v1/appointments', 
+        { appointment: {title, body, startDate} })
         .then(response => {
             console.log(response)
             const appointments = [ ...this.state.appointments, response.data ]
-            this.setState({appointments})
+            this.setState({
+                appointments: [{
+                    title: title, 
+                    body: body,
+                    startDate: this.state.booking.startDate.format("ddd MMM D YYYY, h:mm:ss")
+                } ],
+            })
+            
         })
         .catch(error => {
             console.log(error)
         })
     }
     removeEvent(id) {
-        axios.delete( 'https://appointmentsapi.herokuapp.com/api/v1/appointments/' + id )
+        axios.delete( 'http://localhost:3001/api/v1/appointments/' + id )
         .then(response => {
             const appointments = this.state.appointments.filter(
                 appointment => appointment.id !== id
@@ -112,7 +128,7 @@ class Booking extends React.Component {
                         <Container type='Modal' visible={this.state.show}>
                             <div className='loader__container'>
                                 <div className='content__header'>
-                                    New Booking for date:  {this.state.booking.startDate.format('MM-DD-YYYY')}
+                                    New Booking for date:  {this.state.booking.startDate.format('MM-DD-YYYY HH:mm a')}
                                     {/* {console.log(this.state.booking.startDate.format('MM-DD-YYYY'))} */}
                                     <button type="button" className='content__header__button' onClick={this.onCloseBound}>×</button>
                                 </div>
@@ -120,7 +136,12 @@ class Booking extends React.Component {
                                  
                                    <h1>events for the day of {this.state.booking.startDate.format('MM-DD-YYYY')}</h1> 
                                    {this.state.appointments.map( appointment => {
-                                        if ( appointment.date === this.state.booking.startDate.format('YYYY-MM-DD') ) {
+                                       console.log("1")
+                                       console.log(this.state.booking.startDate.format("ddd MMM D YYYY, h:mm:ss"))
+                                       console.log("2")
+                                       console.log(appointment.startDate)
+
+                                        if ( appointment.startDate === this.state.booking.startDate.format("ddd MMM D YYYY, h:mm:ss") ) {
 
                                     return (
                                       
@@ -139,7 +160,7 @@ class Booking extends React.Component {
                                       
                                 </div>
                             </div>
-                            <NewEventForm onNewEvent={this.addNewEvent} date={this.date} />
+                            <NewEventForm onNewEvent={this.addNewEvent} startDate={this.startDate}/>
 
                         </Container>
                     )

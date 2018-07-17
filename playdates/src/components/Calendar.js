@@ -29,7 +29,7 @@ class Calendar extends React.Component {
         timeSlices: [],
         timeSlot: 30,
         timeExceptions: [],
-        displayPast: false,
+        displayPast: true,
         view: ViewType.Month,
         date: moment(),
         resources: {
@@ -46,9 +46,13 @@ class Calendar extends React.Component {
 
         const bookings = props.bookings.map(booking => {
             booking.startDate = moment.isMoment(booking.startDate) ? booking.startDate : moment(booking.startDate);
+            // console.log(booking.startDate)
             booking.endDate = moment.isMoment(booking.endDate) ? booking.endDate : moment(booking.endDate)
+            // console.log(booking.endDate)
+
             booking.isBooked = true;
             return booking;
+
         });
 
         this.state = {
@@ -60,6 +64,7 @@ class Calendar extends React.Component {
             booking: {},
             appointments: {}
         }
+        
     }
 
 
@@ -126,6 +131,7 @@ class Calendar extends React.Component {
             </div>
             
         );
+        // console.log(this.state.date)
     }
 
     onDateChanged(date) {

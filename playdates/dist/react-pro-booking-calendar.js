@@ -2364,7 +2364,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	
 	// RFC 2822 regex: For details see https://tools.ietf.org/html/rfc2822#section-3.3
-	var basicRfcRegex = /^((?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d?\d\s(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(?:\d\d)?\d\d\s)(\d\d:\d\d)(\:\d\d)?(\s(?:UT|GMT|[ECMP][SD]T|[A-IK-Za-ik-z]|[+-]\d{4}))$/;
+	var basicRfcRegex = /^((?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d?\d\s(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(?:\d\d)?\d\d\s)(\d\d:\d\d)(\:\d\d)?(\s(?:UT|EDT|[ECMP][SD]T|[A-IK-Za-ik-z]|[+-]\d{4}))$/;
 	
 	// date and time from ref 2822 format
 	function configFromRFC2822(config) {
@@ -2421,7 +2421,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                timezone = timezones[match[5]];
 	                break;
 	            default: // UT or +/-9999
-	                timezone = timezones[' GMT'];
+	                timezone = timezones[' EDT'];
 	        }
 	        match[5] = timezone;
 	        config._i = match.splice(1).join('');
@@ -3539,7 +3539,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	hooks.defaultFormatUtc = 'YYYY-MM-DDTHH:mm:ss[Z]';
 	
 	function toString () {
-	    return this.clone().locale('en').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ');
+	    return this.clone().locale('en').format('ddd MMM DD YYYY HH:mm:ss [EDT]ZZ');
 	}
 	
 	function toISOString() {

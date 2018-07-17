@@ -8,7 +8,9 @@ import {getDateTime, getStyle} from '../util';
 import {ViewType} from '../constant';
 import axios from 'axios';
 
-
+var client_id = 'f9c5bffb89904a7c85852a414fcf44fd'; // Your client id
+var client_secret = '3f8b6573751140f2a1c65300e8d63e83'; // Your secret
+var redirect_uri = 'http://localhost:3000/callback'; // Your redirect uri
 
 
 export default class Day extends React.Component {
@@ -73,13 +75,13 @@ export default class Day extends React.Component {
         var randomYear = Math.floor(Math.random() * (year - min + 1)) + min;
         var yearsago = year - randomYear
         var release_date_min = randomYear + month + day;
-        console.log("hello" + release_date_min)
+        // console.log("hello" + release_date_min)
         var release_date_max = randomYear + month + day;
-        console.log(day)
-        console.log(month)
-        console.log(year)
-        console.log(randomYear)
-        console.log(yearsago)
+        // console.log(day)
+        // console.log(month)
+        // console.log(year)
+        // console.log(randomYear)
+        // console.log(yearsago)
 
 
 
@@ -104,7 +106,6 @@ export default class Day extends React.Component {
                   return {
                       songs: res.data
                   }
-                  
                  
               })
             const albums = res.data.message.body.track_list[5].track.album_name;
@@ -115,35 +116,10 @@ export default class Day extends React.Component {
             this.setState({albums, artistname, track, first_release_date, yearsago});
             this.search()
 
-            // console.log('this.state', this.state);
-            // const BASE_URL = 'https://api.spotify.com/v1/search?';
-            // const FETCH_URL = BASE_URL + 'q=' + this.state.track + '&type=track&limit=1';
-    //         const FETCH_URL = BASE_URL + 'q=album:' + this.state.albums + '%20track' + this.state.track + '&type=track' ;
-
-    //         console.log(FETCH_URL)
-    //         var accessToken = 'BQB2YUTdj6MUk_wFD4rDEYEPr0v7b41I9TCMN4Buw2WHBcoEc4oPfZekrY7FpHNKx8HGtVespQSCBm3xCkymn_ABg45UeDUMvLtSQqDP0E3cSJKt06Gb0SP0WMeQ2tTlBY50RSHzQokt8zD8NjjdyfvNmNnhcd0vCZwgxg'
-    //         var myOptions = {
-    //             method: 'GET',
-    //             headers: {
-    //               'Authorization': 'Bearer ' + accessToken
-    //             },
-    //             mode: 'cors',
-    //             cache: 'default'
-    //           }
-    //           fetch(FETCH_URL, myOptions)
-    //           .then(response => response.json())
-    //           .then(json => {
-    //           const spotifyTrack = json.tracks.items[0];   
-    //           console.log(spotifyTrack)     
-
-    //           console.log(spotifyTrack)     
-    //           this.setState({ spotifyTrack });
-    //   })
-          //   console.log(res.data.message.body.track_list)
-            // console.log(track)
+     
           })
           .catch((error) => {
-            // console.log(error);
+              console.log("no songs")
         });
     
       }
@@ -155,7 +131,8 @@ export default class Day extends React.Component {
         const BASE_URL = 'https://api.spotify.com/v1/search?';
         const FETCH_URL = BASE_URL + 'q=album:' + this.state.albums + '%20track:' + this.state.track + '&type=track&limit=1' ;
         // console.log(FETCH_URL)
-        var accessToken = 'BQAgI9wA6Od1mVHqosO_EHAsW9JjLYmyr-BNGRXZhK-oW5ltvOYgc7JPiYO0Cng0Q9qLZllMu9P-kBPwYPjrHjkeOuVISuaoNIfn3DrBVkG6DDfpSAjwAt5fDQQEy1-HPj71xUnoIkLnJXvh_78clrnFIj7eQ2s-ieO03Q'
+        var accessToken = 'BQDvOjSUfjBKiNWWII7YTUqTAGLX-oCFzxFG_fksDwDyq2QmtU-LyvjTnmqY1zp4LFL5_Nfa7Sq8MxSfrBUfua1vkY1iwHvbknvvMhRP-k_MSwZUnnrP4JhundsorgX7WXt35uTaIqsUbX3vMDQRNv_0oz26Gegb7_XUIw'
+
         var myOptions = {
             method: 'GET',
             headers: {
@@ -236,7 +213,7 @@ export default class Day extends React.Component {
 
             const numberOfColumn = endDiary.diff(startDiary, 'minutes') / this.props.timeSlot;
             let currentSlot = this.nextSlot(startDiary);
-
+            // console.log(currentSlot)
             if (this.isDayOff() || (!this.props.displayPast && this.props.date.isBefore(moment(), 'day'))) {
                 return null;
             } else {
@@ -338,12 +315,13 @@ export default class Day extends React.Component {
         return (
             <div className='day'>
                 {this.renderHeader()}
+                <div className="container">
                 <div className="musix">
-                <p>This Song was released today {this.state.yearsago} years ago!</p> 
-                <p>album: {this.state.albums}</p> 
-                <p>artist: {this.state.artistname}</p> 
-                <p>track: {this.state.track}</p> 
-                <p>release date: {this.state.first_release_date}</p> 
+                <p>This Song released today <span className="yearsago">{this.state.yearsago}</span> years ago!</p> 
+                <p>Album: {this.state.albums}</p> 
+                <p>Artist: {this.state.artistname}</p> 
+                <p>Track: {this.state.track}</p> 
+                <p>Release date: {this.state.first_release_date}</p> 
                 </div>
                 
                 <div>
@@ -359,11 +337,13 @@ export default class Day extends React.Component {
  <div>
           <div className="spotifylink"> 
           <a href={this.state.spotifyTrack}>Listen to this song on Spotify</a>
+          
+          {/* <iframe src="https://open.spotify.com/album/2ayZej5i9rkfhZSHxp16as" width="300" height="380"></iframe> */}
            </div>
           {/* <div> {artist.followers.total} </div> */}
         </div>
 
-
+</div>
                 <div className='day__details'>
                     {slots}
                 </div>

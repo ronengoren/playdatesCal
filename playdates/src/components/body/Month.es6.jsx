@@ -9,7 +9,7 @@ import {getBookingsForDay, getSizeType} from '../util';
 
 export default class Month extends React.Component {
     renderDay(date, style) {
-        const timeSlice = find(this.props.timeSlices, x => x.date.isSame(date, 'days'));
+        // const timeSlice = find(this.props.timeSlices, x => x.date.isSame(date, 'days'));
         const bookings = filter(this.props.bookings, x => x.startDate.isSame(date, 'days'));
 
         return (

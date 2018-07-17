@@ -6,7 +6,7 @@ class EditEventForm extends Component {
             id: this.props.appointment.id,
             title: this.props.appointment.title,
             body: this.props.appointment.body,
-            date: this.props.appointment.date
+            startDate: this.props.appointment.startDate
         }
         this.handleChange = this.handleChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)

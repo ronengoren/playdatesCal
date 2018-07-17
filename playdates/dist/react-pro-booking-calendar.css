@@ -1,4 +1,6 @@
 @charset "UTF-8";
+@import url('https://fonts.googleapis.com/css?family=Montserrat:100');
+
 /*!
  *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
@@ -2599,9 +2601,9 @@ html, body {
     text-transform: uppercase;
     cursor: pointer; }
     .rbc-view__button:hover {
-      color: rgba(245, 122, 163, 0.8); }
+      color: #1db954 }
     .rbc-view__button--active {
-      background: rgba(245, 122, 163, 0.8); }
+      background: #1db954; }
       .rbc-view__button--active:hover {
         color: #fff; }
   .rbc-view--small .rbc-view__button, .rbc-view--medium .rbc-view__button {

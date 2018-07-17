@@ -4,7 +4,7 @@ import {find, filter} from 'lodash';
 export const appointments = [
     {
         componentDidMount() {
-            axios.get('http://localhost:3001/api/v1/appointments.json')
+            axios.get('https://appointmentsapi.herokuapp.com/api/v1/appointments.json')
             .then(response => {
                 console.log(response)
                 this.setState({
@@ -20,11 +20,15 @@ export const appointments = [
 
 export function getDateTime(date, time) {
     const values = time.split(':');
+    // console.log(values)
     return moment(date).set({ hour: +values[0], minute: +values[1], second: 0, millisecond: 0 });
 }
 
 export function getBookingsForDay(bookings, date) {
+    console.log(bookings)
+
     return filter(bookings, x => x.startDate.isSame(date, 'days'));
+    
 }
 
 export function getBookingsForWeek(bookings, date) {
@@ -34,6 +38,8 @@ export function getBookingsForWeek(bookings, date) {
 }
 
 export function getBookingsForMonth(bookings, date) {
+    console.log(bookings)
+
     return filter(bookings, x => x.startDate.isSame(date, 'month'));
 }
 
@@ -90,6 +96,7 @@ export function getTimesliceForMonth(timeSlices, timeExceptions, date) {
             result.push({ date: current.clone(), start: exception.startTime, end: exception.endTime, off: exception.off });
         } else {
             const timeSlice = find(timeSlices, x => x.day === current.format('dddd'));
+
             if (timeSlice) {
                 result.push({ date: current.clone(), start: timeSlice.start, end: timeSlice.end });
             }

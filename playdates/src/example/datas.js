@@ -2,13 +2,13 @@ import moment from 'moment';
 const timeSlot = 30;
 
 // PARIS TIMEZONE
-const localDatTime = moment().add(1, 'd').utc().utcOffset(-120);
-
+const localDatTime = moment().add(1, 'd')
+console.log(localDatTime)
 
 export const appointments = [
     {
         componentDidMount() {
-            axios.get('http://localhost:3001/api/v1/appointments.json')
+            axios.get('https://appointmentsapi.herokuapp.com/api/v1/appointments')
             .then(response => {
                 console.log(response)
                 this.setState({
@@ -61,7 +61,7 @@ export const timeExceptions = [
 ];
 
 export function componentDidMount() {
-    axios.get('http://localhost:3001/api/v1/appointments.json')
+    axios.get('https://appointmentsapi.herokuapp.com/api/v1/appointments.json')
     .then(response => {
         console.log(response)
         this.setState({
@@ -72,14 +72,30 @@ export function componentDidMount() {
 }
 
 export const bookings = [
+    {
+        startDate: "Sun Jul 22 2018 12:00:00",
+        
+        endDate: "",
+        title: "test"
+    },
+    {
+        startDate: localDatTime.clone().add(+4, 'd').seconds(0).milliseconds(0).hours(10).minutes(0),
+        
+        endDate: localDatTime.clone().add(+4, 'd').seconds(0).milliseconds(0).hours(10).minutes(30),
+        title: "test"
+    }
+    // ,
     // {
     //     startDate: localDatTime.clone().add(-2, 'd').seconds(0).milliseconds(0).hours(10).minutes(0),
     //     endDate: localDatTime.clone().add(-2, 'd').seconds(0).milliseconds(0).hours(10).minutes(30)
-    // },
+    // }
+    // ,
+    
     // {
     //     startDate: localDatTime.clone().add(2, 'd').seconds(0).milliseconds(0).hours(10).minutes(0),
     //     endDate: localDatTime.clone().add(2, 'd').seconds(0).milliseconds(0).hours(10).minutes(30)
-    // },
+    // }
+    // ,
     // {
     //     startDate: localDatTime.clone().add(1, 'd').seconds(0).milliseconds(0).hours(12).minutes(0),
     //     endDate: localDatTime.clone().add(1, 'd').seconds(0).milliseconds(0).hours(13).minutes(30)
