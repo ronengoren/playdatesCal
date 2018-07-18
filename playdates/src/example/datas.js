@@ -2,7 +2,7 @@ import moment from 'moment';
 const timeSlot = 30;
 
 // PARIS TIMEZONE
-const localDatTime = moment().add(1, 'd')
+const localDatTime = moment()
 console.log(localDatTime)
 
 export const appointments = [
@@ -75,7 +75,7 @@ export const bookings = [
     {
         startDate: "Sun Jul 22 2018 12:00:00",
         
-        endDate: "",
+        endDate: "Sun Jul 22 2018 12:30:00",
         title: "test"
     },
     {

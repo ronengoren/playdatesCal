@@ -42,13 +42,10 @@ class Booking extends React.Component {
         axios.get('http://localhost:3001/api/v1/appointments')
         .then(response => {
             console.log(response)
-            // console.log(response.data[0].date)
+            // startDate = this.startDate.format("ddd MMM D YYYY, h:mm:ss")
+            // console.log(response.data[0].startDate)
             this.setState({
-                appointments: [{
-                    title: "", 
-                    body: "",
-                    startDate: ""
-                } ],
+                appointments: response.data
             })
             console.log(response.data)
 
@@ -61,7 +58,7 @@ class Booking extends React.Component {
         this.setState({ [event.target.name]: event.target.value});
     }
     addNewEvent(title, body, startDate) {
-        // startDate = this.state.booking.startDate.format("ddd MMM D YYYY, h:mm:ss")
+        startDate = this.state.booking.startDate.format("ddd MMM D YYYY, h:mm:ss")
         // console.log(startDate)
         // console.log("date")
 
@@ -72,13 +69,7 @@ class Booking extends React.Component {
         .then(response => {
             console.log(response)
             const appointments = [ ...this.state.appointments, response.data ]
-            this.setState({
-                appointments: [{
-                    title: title, 
-                    body: body,
-                    startDate: this.state.booking.startDate.format("ddd MMM D YYYY, h:mm:ss")
-                } ],
-            })
+            this.setState({appointments})
             
         })
         .catch(error => {
@@ -137,11 +128,12 @@ class Booking extends React.Component {
                                    <h1>events for the day of {this.state.booking.startDate.format('MM-DD-YYYY')}</h1> 
                                    {this.state.appointments.map( appointment => {
                                        console.log("1")
-                                       console.log(this.state.booking.startDate.format("ddd MMM D YYYY, h:mm:ss"))
+                                    //    console.log(this.state.booking.startDate.format("ddd MMM D YYYY, h:mm:ss"))
                                        console.log("2")
-                                       console.log(appointment.startDate)
-
-                                        if ( appointment.startDate === this.state.booking.startDate.format("ddd MMM D YYYY, h:mm:ss") ) {
+                                    //    console.log(appointment.startDate)
+                                       var start = moment(appointment.startDate).utc().format('ddd MMM D YYYY, h:mm:ss');
+                                        console.log(start)
+                                        if ( start === this.state.booking.startDate.format("ddd MMM D YYYY, h:mm:ss") ) {
 
                                     return (
                                       
@@ -160,7 +152,7 @@ class Booking extends React.Component {
                                       
                                 </div>
                             </div>
-                            <NewEventForm onNewEvent={this.addNewEvent} startDate={this.startDate}/>
+                            <NewEventForm onNewEvent={this.addNewEvent} startDate={this.state.booking.startDate}/>
 
                         </Container>
                     )
