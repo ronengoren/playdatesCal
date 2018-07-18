@@ -39,7 +39,7 @@ class Booking extends React.Component {
         this.editEvent = this.editEvent.bind(this)
     }
     componentDidMount() {
-        axios.get('http://localhost:3001/api/v1/appointments')
+        axios.get('https://appointmentsapi.herokuapp.com/api/v1/appointments')
         .then(response => {
             console.log(response)
             // startDate = this.startDate.format("ddd MMM D YYYY, h:mm:ss")
@@ -64,7 +64,7 @@ class Booking extends React.Component {
 
         // console.log(startDate)
 
-        axios.post( 'http://localhost:3001/api/v1/appointments', 
+        axios.post( 'https://appointmentsapi.herokuapp.com/api/v1/appointments', 
         { appointment: {title, body, startDate} })
         .then(response => {
             console.log(response)
@@ -77,7 +77,7 @@ class Booking extends React.Component {
         })
     }
     removeEvent(id) {
-        axios.delete( 'http://localhost:3001/api/v1/appointments/' + id )
+        axios.delete( 'https://appointmentsapi.herokuapp.com/api/v1/appointments/' + id )
         .then(response => {
             const appointments = this.state.appointments.filter(
                 appointment => appointment.id !== id
@@ -119,13 +119,13 @@ class Booking extends React.Component {
                         <Container type='Modal' visible={this.state.show}>
                             <div className='loader__container'>
                                 <div className='content__header'>
-                                    New Booking for date:  {this.state.booking.startDate.format('MM-DD-YYYY HH:mm a')}
+                                    <b>New Booking for Date:  {this.state.booking.startDate.format('MM-DD-YYYY HH:mm a')}</b>
                                     {/* {console.log(this.state.booking.startDate.format('MM-DD-YYYY'))} */}
                                     <button type="button" className='content__header__button' onClick={this.onCloseBound}>×</button>
                                 </div>
                                 <div>
                                  
-                                   <h1>events for the day of {this.state.booking.startDate.format('MM-DD-YYYY')}</h1> 
+                                   {/* <h1>Events for the date {this.state.booking.startDate.format('MM-DD-YYYY')}</h1>  */}
                                    {this.state.appointments.map( appointment => {
                                        console.log("1")
                                     //    console.log(this.state.booking.startDate.format("ddd MMM D YYYY, h:mm:ss"))
@@ -144,6 +144,14 @@ class Booking extends React.Component {
                                         editingEvent={this.editingEvent} 
 
                                         />
+                                  )
+                                }
+                                if ( start ==! this.state.booking.startDate.format("ddd MMM D YYYY, h:mm:ss") ) {
+
+                                    return (
+                                      <div>
+                                        <h1>asdfasdf</h1>
+                                        </div>
                                   )
                                 }
                                 

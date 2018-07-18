@@ -1,4 +1,5 @@
 import React from 'react';
+import './style.css';
 
 
 const NewEventForm = ({onNewEvent = f => f}) => {
@@ -13,14 +14,14 @@ const NewEventForm = ({onNewEvent = f => f}) => {
     }
 
     return (
-        <form onSubmit={submit}>
+        <form onSubmit={submit} className="newEventForm">
             <input  ref={input => title = input}
                     type="text"
-                    placeholder="Title..." required />
+                    placeholder="Title..." required /> <br/>
             <input  ref={input => body = input}
                     type="text"
                     placeholder="Body..." required />
-            <button>Add Event</button>
+            <button className="example_d">Add Event</button>
         </form>
     )
 }

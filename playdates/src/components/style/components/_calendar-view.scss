@@ -1,7 +1,12 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat:100');
+
+
 .rbc-view {
     width: 100%;
     background: $main-bg-color;
     color: $main-color;
+    font-family: 'Montserrat', sans-serif;
+
 
     &__button {
         background: $main-bg-color;
@@ -11,6 +16,8 @@
         font-size: 18px;
         text-transform: uppercase;
         cursor: pointer;
+        font-family: 'Montserrat', sans-serif;
+
 
         &:hover {
             color: $header-hover-color;
@@ -18,6 +25,7 @@
 
         &--active {
             background: $header-active-bg-color;
+            color: #191414;
 
             &:hover {
                 color: $header-active-hover-bg-color;

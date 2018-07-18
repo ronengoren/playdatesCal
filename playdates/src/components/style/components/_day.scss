@@ -1,7 +1,7 @@
 .day {
     &__header {
         background: $day-header-bg-color;
-        color: $day-header-color;
+        color: white;
         border-right: 1px solid $main-border-color;
 
         > span {

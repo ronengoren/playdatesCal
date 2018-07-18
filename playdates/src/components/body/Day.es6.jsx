@@ -321,7 +321,6 @@ export default class Day extends React.Component {
                 <p>Album: {this.state.albums}</p> 
                 <p>Artist: {this.state.artistname}</p> 
                 <p>Track: {this.state.track}</p> 
-                <p>Release date: {this.state.first_release_date}</p> 
                 </div>
                 
                 <div>
