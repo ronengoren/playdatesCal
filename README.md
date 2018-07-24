@@ -1,7 +1,7 @@
 ![image](https://user-images.githubusercontent.com/18123962/43118142-856bc1be-8ede-11e8-87ff-8c396a9ca595.png)
 
 
-This site was built using Heroku [Heroku](https://playdates-calendar.herokuapp.com/)
+This site was built using [Heroku](https://playdates-calendar.herokuapp.com/)
   PLEASE ENABLE CROSS-ORIGIN RESOURCE SHARING
 
 
