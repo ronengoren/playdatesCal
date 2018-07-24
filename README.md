@@ -9,13 +9,13 @@ This site was built using [Heroku](https://playdates-calendar.herokuapp.com/)
 
 Appointment Calendar - ReactJS/Ruby on Rails/Spotify API/MusixMatch API
 
-#### - User authentication to spotify API
+#### * User authentication to spotify API
 
-#### - Yearly view in a month/week/day layout - using Moment
+#### * Yearly view in a month/week/day layout - using Moment
 
-#### - Add appointments to a database by day/hour - PostgresQL / Ruby on Rails beckend server
+#### * Add appointments to a database by day/hour - PostgresQL / Ruby on Rails beckend server
 
-#### - On any day the user click, the app displayed a song that was released on the same day with added info: years from release, name, album, artist, direct link to the song on spotify, 30 secinds preview of the rendered song  
+#### * On any day the user click, the app displayed a song that was released on the same day with added info: years from              release, name, album, artist, direct link to the song on spotify, 30 secinds preview of the rendered song  
 
 ![screen shot 2018-07-24 at 1 07 51 am](https://user-images.githubusercontent.com/18123962/43118495-1e37060a-8ee0-11e8-9c94-0131a22c3487.png)
 
