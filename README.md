@@ -11,11 +11,11 @@ Appointment Calendar - ReactJS/Ruby on Rails/Spotify API/MusixMatch API
 
 - User authentication - Spotify API
 
-- early view in a month/week/day layout - using Moment
+- Yearly view in a month/week/day layout - Moment for React
 
-- Add appointments to a database by day/hour - PostgresQL / Ruby on Rails beckend server
+- Add appointments to a database by day/hour - PostgresQL / Ruby on Rails backend server
 
-- On any day the user click, the app displayed a song that was released on the same day with added info: years from              release, name, album, artist, direct link to the song on spotify, 30 seconds preview of the rendered song - Spotify            API/MusixMatch API/Spotify Player npm 
+- On each day the user click, the app render a song that been released on the same day with extra added info actions: years from              release, Track name, Album name, Artist Name, direct link to the song on spotify's user account, 30 seconds preview of the rendered song - Spotify            API/MusixMatch API/Spotify Player npm 
 
 ![screen shot 2018-07-24 at 1 07 51 am](https://user-images.githubusercontent.com/18123962/43118495-1e37060a-8ee0-11e8-9c94-0131a22c3487.png)
 
