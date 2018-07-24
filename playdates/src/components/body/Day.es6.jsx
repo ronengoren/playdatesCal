@@ -2,15 +2,16 @@ import React, { Component } from 'react';
 import moment from 'moment';
 import bem from 'bem-classname';
 import {assign, find, times} from 'lodash';
+import SpotifyPlayer from 'react-spotify-player';
 
 import Slot from './Slot';
 import {getDateTime, getStyle} from '../util';
 import {ViewType} from '../constant';
 import axios from 'axios';
+import queryString from 'query-string';
+import {spotify} from './spotify'
 
-var client_id = 'f9c5bffb89904a7c85852a414fcf44fd'; // Your client id
-var client_secret = '3f8b6573751140f2a1c65300e8d63e83'; // Your secret
-var redirect_uri = 'http://localhost:3000/callback'; // Your redirect uri
+import Script from 'react-load-script'
 
 
 export default class Day extends React.Component {
@@ -23,16 +24,20 @@ export default class Day extends React.Component {
         noHeader: false
     }
     constructor(props){
+        let parsed = queryString.parse(location.search);
+        let token = parsed.access_token;
         super(props);
         this.state = {
-            track: null  // my response.
+            track: null,
+            token: token 
           
       
         }
-     
+        console.log("dfdf")
+     console.log(token)
     }
    
-
+ 
     createSlot(key, booking, numberOfColumn, numberOfSlot, clickable = true) {
         const style = getStyle(this.props.view, numberOfColumn, numberOfSlot);
         return <Slot key={key}
@@ -66,6 +71,34 @@ export default class Day extends React.Component {
         }) : undefined;
        
     }
+
+    spotifyPlayer() {
+        const play = ({
+  spotify_uri,
+  playerInstance: {
+    _options: {
+      getOAuthToken,
+      id
+    }
+  }
+}) => {
+  getOAuthToken(access_token => {
+    fetch(`https://api.spotify.com/v1/me/player/play?device_id=${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ uris: [spotify_uri] }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${access_token}`
+      },
+    });
+  });
+};
+
+play({
+  playerInstance: new Spotify.Player({ name: "..." }),
+  spotify_uri: 'spotify:track:7xGfFoTpQ2E7fRF5lN10tr',
+});
+}
     
     componentDidMount()  {
         var day = this.props.date.format('DD')
@@ -82,8 +115,8 @@ export default class Day extends React.Component {
         // console.log(year)
         // console.log(randomYear)
         // console.log(yearsago)
-
-
+     
+       
 
        
   
@@ -93,6 +126,7 @@ export default class Day extends React.Component {
               f_track_release_group_first_release_date_min: release_date_min,
               f_track_release_group_first_release_date_max: release_date_max,
               format: "JSON",
+              timeout: 10000,
               headers:{
                 'Access-Control-Allow-Origin':'*'
                 },
@@ -106,6 +140,7 @@ export default class Day extends React.Component {
                   return {
                       songs: res.data
                   }
+                  console.log(songs)
                  
               })
             const albums = res.data.message.body.track_list[5].track.album_name;
@@ -113,25 +148,31 @@ export default class Day extends React.Component {
             const track = res.data.message.body.track_list[5].track.track_name;
             const first_release_date = res.data.message.body.track_list[5].track.first_release_date;
             var yearsago = year - randomYear
+            const songsdata = res.data
+            console.log(songsdata)
             this.setState({albums, artistname, track, first_release_date, yearsago});
             this.search()
 
      
           })
           .catch((error) => {
-              console.log("no songs")
+              
         });
     
       }
 
   
 
+     
       search(){
+        let parsed = queryString.parse(window.location.search);
+        let accessToken = parsed.access_token;
+        console.log(accessToken)
         console.log('this.state', this.state);
         const BASE_URL = 'https://api.spotify.com/v1/search?';
         const FETCH_URL = BASE_URL + 'q=album:' + this.state.albums + '%20track:' + this.state.track + '&type=track&limit=1' ;
         // console.log(FETCH_URL)
-        var accessToken = 'BQDvOjSUfjBKiNWWII7YTUqTAGLX-oCFzxFG_fksDwDyq2QmtU-LyvjTnmqY1zp4LFL5_Nfa7Sq8MxSfrBUfua1vkY1iwHvbknvvMhRP-k_MSwZUnnrP4JhundsorgX7WXt35uTaIqsUbX3vMDQRNv_0oz26Gegb7_XUIw'
+        // var accessToken = 'BQCB2U_j11KSeQf36hdnU7dyFt-BW1fSbVM49O3IjGSV0fUCB5bKoJVa9q_qM0iuyJs-cDJRZLHGpMU8gdWGKHx7C2V0gCd3Qkfm4ykTH32Enu_udann4cwElOTDzcTHuBNaYz4DEZxnyXh3LBsWXOrLyhj1-w'
 
         var myOptions = {
             method: 'GET',
@@ -144,19 +185,25 @@ export default class Day extends React.Component {
           fetch(FETCH_URL, myOptions)
       .then(response => response.json())
       .then(json => {
+          console.log(json)
         const spotifyTrack = json.tracks.items[0].external_urls.spotify;   
-        console.log(spotifyTrack
-            
-        )     
+        const spotifyTrackLink = json.tracks.items[0].uri;   
+        console.log(spotifyTrack)     
+        console.log(spotifyTrackLink)     
+       
 
-        this.setState({ spotifyTrack });
-        // console.log({spotifyTrack})     
-        // console.log(spotifyTrack)     
-
+        this.setState({ spotifyTrack ,spotifyTrackLink, accessToken});
+        console.log({accessToken})     
+        console.log(spotifyTrackLink)     
+        
       })
+      
       }
-     
 
+ 
+
+
+      
     isDayOff() {
         return this.props.timeSlice &&
             this.props.timeSlice.off &&
@@ -196,6 +243,10 @@ export default class Day extends React.Component {
     }
 
     render() {
+    
+        const playersize = "compact";
+          const theme = 'black'; // or 'white'
+          const view = 'coverart'; // or 'coverart'
         let  spotifyTrack = {
             spotifyTrack: ''
         }
@@ -311,8 +362,9 @@ export default class Day extends React.Component {
                 }
             }
         }
-
+       
         return (
+            
             <div className='day'>
                 {this.renderHeader()}
                 <div className="container">
@@ -322,7 +374,7 @@ export default class Day extends React.Component {
                 <p>Artist: {this.state.artistname}</p> 
                 <p>Track: {this.state.track}</p> 
                 </div>
-                
+
                 <div>
 
                      {/* <input type="text" 
@@ -337,16 +389,23 @@ export default class Day extends React.Component {
           <div className="spotifylink"> 
           <a href={this.state.spotifyTrack}>Listen to this song on Spotify</a>
           
-          {/* <iframe src="https://open.spotify.com/album/2ayZej5i9rkfhZSHxp16as" width="300" height="380"></iframe> */}
-           </div>
-          {/* <div> {artist.followers.total} </div> */}
+           </div> <br/>
+           <SpotifyPlayer
+  uri={this.state.spotifyTrackLink}
+  size={playersize}
+  view={view}
+  theme={theme}
+// getOAuthToken={this.state.accessToken}
+/>
         </div>
-
 </div>
                 <div className='day__details'>
                     {slots}
                 </div>
             </div>
+            
         );
+
     }
 }
+

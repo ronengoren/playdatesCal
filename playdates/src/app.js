@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
 import {ViewType} from './index';
 import Booking from './example/Booking';
 import {appointments, bookings, timeSlot, timeSlices, timeExceptions} from './example/datas';

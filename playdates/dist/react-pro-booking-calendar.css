@@ -1,6 +1,4 @@
-@charset "UTF-8";
-@import url('https://fonts.googleapis.com/css?family=Montserrat:100');
-
+@import url(https://fonts.googleapis.com/css?family=Montserrat:100);@charset "UTF-8";
 /*!
  *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
@@ -2338,7 +2336,8 @@ html, body {
   max-width: 100%;
   min-height: 100%;
   height: 100%;
-  max-height: 100%; }
+  max-height: 100%;
+  font-family: 'Montserrat', sans-serif; }
 
 /**
  * Basic typography style for copy text
@@ -2350,25 +2349,25 @@ html, body {
   text-align: center;
   pointer-events: none;
   cursor: none;
-  background: #3E3F40;
-  color: #fff; }
+  background: #191414;
+  color: #1db954; }
   .rbc-slot--inactive {
-    background: #3E3F40; }
+    background: #191414; }
   .rbc-slot:not(\--inactive) {
     box-sizing: border-box; }
   .rbc-slot--clickable {
     pointer-events: visible;
     cursor: pointer; }
   .rbc-slot--free {
-    color: #47B8D1; }
+    color: #1db954; }
   .rbc-slot--booked {
     color: #f57aa3; }
   .rbc-slot--small, .rbc-slot--medium {
     height: 100%; }
 
 .day__header {
-  background: #3E3F40;
-  color: #fff;
+  background: #191414;
+  color: white;
   border-right: 1px solid rgba(255, 255, 255, 0.3); }
   .day__header > span {
     display: block;
@@ -2412,6 +2411,15 @@ html, body {
 .playing {
   opacity: 0.2; }
 
+.container {
+  border-style: solid;
+  border-width: 1px;
+  border-color: #62D36E;
+  margin: 0 auto; }
+
+.yearsago {
+  color: #62D36E; }
+
 .rbc-week--small, .rbc-week--medium {
   display: flex;
   flex-direction: row;
@@ -2421,6 +2429,10 @@ html, body {
     flex: 1;
     width: 0; }
     .rbc-week--small .day .musix, .rbc-week--medium .day .musix {
+      display: none; }
+    .rbc-week--small .day .spotifylink, .rbc-week--medium .day .spotifylink {
+      display: none; }
+    .rbc-week--small .day .SpotifyPlayer, .rbc-week--medium .day .SpotifyPlayer {
       display: none; }
     .rbc-week--small .day__header, .rbc-week--medium .day__header {
       height: 40px;
@@ -2443,10 +2455,10 @@ html, body {
   font-size: 17px; }
 
 .rbc-week--small .rbc-slot__message {
-  font-size: 15px; }
+  font-size: 13px; }
 
 .rbc-week--medium .rbc-slot__title {
-  font-size: 20px; }
+  font-size: 13px; }
 
 .rbc-week--big .day {
   display: flex;
@@ -2521,21 +2533,25 @@ html, body {
 
 .rbc-header {
   text-align: center;
-  background: #000;
+  background: #191414;
   color: #fff; }
   .rbc-header--big {
-    height: 200px; }
+    height: 150px; }
 
 .playdates {
-  color: yellow;
-  background-color: black;
+  color: #1db954;
+  background-color: 191414;
   padding-top: 5px; }
 
+.stronglogo {
+  font-weight: 100px; }
+
 .rbc-body {
-  background: #3E3F40;
+  background: #191414;
   color: #fff;
-  height: 600px;
-  font-size: 20px; }
+  height: 560px;
+  font-size: 17px;
+  margin-top: 20px; }
 
 .rbc-date {
   position: relative; }
@@ -2549,7 +2565,7 @@ html, body {
     font-style: normal;
     font-weight: normal;
     text-decoration: inherit;
-    color: #fff;
+    color: #1db954;
     font-size: 40px;
     padding-right: 0.5em;
     position: absolute;
@@ -2581,7 +2597,8 @@ html, body {
       width: 100%; }
   .rbc-date--big {
     height: 150px;
-    display: inline-block; }
+    display: inline-block;
+    margin-top: -50px; }
     .rbc-date--big .rbc-date__date {
       line-height: 150px;
       font-size: 30px;
@@ -2590,22 +2607,25 @@ html, body {
 
 .rbc-view {
   width: 100%;
-  background: #000;
-  color: #fff; }
+  background: #191414;
+  color: #1db954;
+  font-family: 'Montserrat', sans-serif; }
   .rbc-view__button {
-    background: #000;
-    color: #fff;
+    background: #191414;
+    color: #1db954;
     border: none;
     outline: none;
     font-size: 18px;
     text-transform: uppercase;
-    cursor: pointer; }
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif; }
     .rbc-view__button:hover {
-      color: #1db954 }
+      color: #1db954; }
     .rbc-view__button--active {
-      background: #1db954; }
+      background: #1db954;
+      color: #191414; }
       .rbc-view__button--active:hover {
-        color: #fff; }
+        color: #191414; }
   .rbc-view--small .rbc-view__button, .rbc-view--medium .rbc-view__button {
     width: 100%;
     height: 50px; }

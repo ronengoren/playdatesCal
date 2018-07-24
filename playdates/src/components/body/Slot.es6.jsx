@@ -24,7 +24,7 @@ export default class Slot extends React.Component {
     renderBookingLink() {
         return this.props.isBooked
         ? <span>Booked</span>
-        : <span>Book</span>;
+        : <span>Add Event</span>;
     }
 
     renderEmptySlot() {

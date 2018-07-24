@@ -77,6 +77,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
+	// import spotify from './components/spotify';
+	
 	module.exports = {
 	    Calendar: _Calendar2.default,
 	    ViewType: _constant.ViewType
@@ -117,13 +119,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _CalendarHeader2 = _interopRequireDefault(_CalendarHeader);
 	
-	var _CalendarBody = __webpack_require__(/*! ./body/CalendarBody */ 348);
+	var _CalendarBody = __webpack_require__(/*! ./body/CalendarBody */ 351);
 	
 	var _CalendarBody2 = _interopRequireDefault(_CalendarBody);
 	
 	var _constant = __webpack_require__(/*! ./constant */ 344);
 	
-	var _axios = __webpack_require__(/*! axios */ 349);
+	var _axios = __webpack_require__(/*! axios */ 352);
 	
 	var _axios2 = _interopRequireDefault(_axios);
 	
@@ -154,7 +156,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	        var bookings = props.bookings.map(function (booking) {
 	            booking.startDate = _moment2.default.isMoment(booking.startDate) ? booking.startDate : (0, _moment2.default)(booking.startDate);
+	            // console.log(booking.startDate)
 	            booking.endDate = _moment2.default.isMoment(booking.endDate) ? booking.endDate : (0, _moment2.default)(booking.endDate);
+	            // console.log(booking.endDate)
+	
 	            booking.isBooked = true;
 	            return booking;
 	        });
@@ -168,6 +173,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            booking: {},
 	            appointments: {}
 	        };
+	
 	        return _this;
 	    }
 	
@@ -228,6 +234,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    slotClicked: this.props.onSlotChoosen,
 	                    size: this.props.size })
 	            );
+	            // console.log(this.state.date)
 	        }
 	    }, {
 	        key: 'onDateChanged',
@@ -252,7 +259,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    timeSlices: [],
 	    timeSlot: 30,
 	    timeExceptions: [],
-	    displayPast: false,
+	    displayPast: true,
 	    view: _constant.ViewType.Month,
 	    date: (0, _moment2.default)(),
 	    resources: {
@@ -2364,7 +2371,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	
 	// RFC 2822 regex: For details see https://tools.ietf.org/html/rfc2822#section-3.3
-	var basicRfcRegex = /^((?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d?\d\s(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(?:\d\d)?\d\d\s)(\d\d:\d\d)(\:\d\d)?(\s(?:UT|EDT|[ECMP][SD]T|[A-IK-Za-ik-z]|[+-]\d{4}))$/;
+	var basicRfcRegex = /^((?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d?\d\s(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(?:\d\d)?\d\d\s)(\d\d:\d\d)(\:\d\d)?(\s(?:UT|GMT|[ECMP][SD]T|[A-IK-Za-ik-z]|[+-]\d{4}))$/;
 	
 	// date and time from ref 2822 format
 	function configFromRFC2822(config) {
@@ -2421,7 +2428,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                timezone = timezones[match[5]];
 	                break;
 	            default: // UT or +/-9999
-	                timezone = timezones[' EDT'];
+	                timezone = timezones[' GMT'];
 	        }
 	        match[5] = timezone;
 	        config._i = match.splice(1).join('');
@@ -3539,7 +3546,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	hooks.defaultFormatUtc = 'YYYY-MM-DDTHH:mm:ss[Z]';
 	
 	function toString () {
-	    return this.clone().locale('en').format('ddd MMM DD YYYY HH:mm:ss [EDT]ZZ');
+	    return this.clone().locale('en').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ');
 	}
 	
 	function toISOString() {
@@ -60316,6 +60323,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _util = __webpack_require__(/*! ../util */ 346);
 	
+	var _queryString = __webpack_require__(/*! query-string */ 348);
+	
+	var _queryString2 = _interopRequireDefault(_queryString);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -60351,8 +60362,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 	    }, {
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            var _this2 = this;
+	
+	            var parsed = _queryString2.default.parse(window.location.search);
+	            var accessToken = parsed.access_token;
+	            if (!accessToken) return;
+	            fetch('https://api.spotify.com/v1/me', {
+	                headers: { 'Authorization': 'Bearer ' + accessToken }
+	            }).then(function (response) {
+	                return response.json();
+	            }).then(function (data) {
+	                return _this2.setState({
+	                    user: {
+	                        name: data.display_name
+	
+	                    }
+	                });
+	            });
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
+	            var SpotifyUser = this.state.user;
+	            var divStyle = {
+	                color: 'white',
+	                fontWeight: 'bold',
+	                fontSize: '30px',
+	                paddinhTop: '20px'
+	            };
 	            var sizeModifier = 'rbc-header' + (0, _util.getSizeModifier)(this.props.size);
 	            return _react2.default.createElement(
 	                'div',
@@ -60360,7 +60399,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	                _react2.default.createElement(
 	                    'h1',
 	                    null,
-	                    'PLAYDates'
+	                    'PLAYD',
+	                    _react2.default.createElement(
+	                        'span',
+	                        { className: 'stronglogo', style: divStyle },
+	                        'ates'
+	                    )
+	                ),
+	                this.state.user ? _react2.default.createElement(
+	                    'h1',
+	                    null,
+	                    'Hey there ',
+	                    this.state.user.name
+	                ) : _react2.default.createElement(
+	                    'button',
+	                    { onClick: function onClick() {
+	                            window.location = window.location.href.includes('localhost') ? 'http://localhost:8888/login' : 'http://localhost:3000/login';
+	                        }
+	                    },
+	                    'Sign in with Spotify'
 	                ),
 	                _react2.default.createElement(
 	                    'div',
@@ -60576,7 +60633,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    componentDidMount: function componentDidMount() {
 	        var _this = this;
 	
-	        axios.get('http://localhost:3001/api/v1/appointments.json').then(function (response) {
+	        axios.get('https://appointmentsapi.herokuapp.com/api/v1/appointments.json').then(function (response) {
 	            console.log(response);
 	            _this.setState({
 	                appointments: response.data
@@ -60587,10 +60644,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function getDateTime(date, time) {
 	    var values = time.split(':');
+	    // console.log(values)
 	    return (0, _moment2.default)(date).set({ hour: +values[0], minute: +values[1], second: 0, millisecond: 0 });
 	}
 	
 	function getBookingsForDay(bookings, date) {
+	    console.log(bookings);
+	
 	    return (0, _lodash.filter)(bookings, function (x) {
 	        return x.startDate.isSame(date, 'days');
 	    });
@@ -60605,6 +60665,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	
 	function getBookingsForMonth(bookings, date) {
+	    console.log(bookings);
+	
 	    return (0, _lodash.filter)(bookings, function (x) {
 	        return x.startDate.isSame(date, 'month');
 	    });
@@ -60676,6 +60738,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var timeSlice = (0, _lodash.find)(timeSlices, function (x) {
 	                return x.day === current.format('dddd');
 	            });
+	
 	            if (timeSlice) {
 	                result.push({ date: current.clone(), start: timeSlice.start, end: timeSlice.end });
 	            }
@@ -60816,6 +60879,351 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ }),
 /* 348 */
+/*!*********************************!*\
+  !*** ./~/query-string/index.js ***!
+  \*********************************/
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	const strictUriEncode = __webpack_require__(/*! strict-uri-encode */ 349);
+	const decodeComponent = __webpack_require__(/*! decode-uri-component */ 350);
+	
+	function encoderForArrayFormat(options) {
+		switch (options.arrayFormat) {
+			case 'index':
+				return (key, value, index) => {
+					return value === null ? [
+						encode(key, options),
+						'[',
+						index,
+						']'
+					].join('') : [
+						encode(key, options),
+						'[',
+						encode(index, options),
+						']=',
+						encode(value, options)
+					].join('');
+				};
+			case 'bracket':
+				return (key, value) => {
+					return value === null ? [encode(key, options), '[]'].join('') : [
+						encode(key, options),
+						'[]=',
+						encode(value, options)
+					].join('');
+				};
+			default:
+				return (key, value) => {
+					return value === null ? encode(key, options) : [
+						encode(key, options),
+						'=',
+						encode(value, options)
+					].join('');
+				};
+		}
+	}
+	
+	function parserForArrayFormat(options) {
+		let result;
+	
+		switch (options.arrayFormat) {
+			case 'index':
+				return (key, value, accumulator) => {
+					result = /\[(\d*)\]$/.exec(key);
+	
+					key = key.replace(/\[\d*\]$/, '');
+	
+					if (!result) {
+						accumulator[key] = value;
+						return;
+					}
+	
+					if (accumulator[key] === undefined) {
+						accumulator[key] = {};
+					}
+	
+					accumulator[key][result[1]] = value;
+				};
+			case 'bracket':
+				return (key, value, accumulator) => {
+					result = /(\[\])$/.exec(key);
+					key = key.replace(/\[\]$/, '');
+	
+					if (!result) {
+						accumulator[key] = value;
+						return;
+					}
+	
+					if (accumulator[key] === undefined) {
+						accumulator[key] = [value];
+						return;
+					}
+	
+					accumulator[key] = [].concat(accumulator[key], value);
+				};
+			default:
+				return (key, value, accumulator) => {
+					if (accumulator[key] === undefined) {
+						accumulator[key] = value;
+						return;
+					}
+	
+					accumulator[key] = [].concat(accumulator[key], value);
+				};
+		}
+	}
+	
+	function encode(value, options) {
+		if (options.encode) {
+			return options.strict ? strictUriEncode(value) : encodeURIComponent(value);
+		}
+	
+		return value;
+	}
+	
+	function decode(value, options) {
+		if (options.decode) {
+			return decodeComponent(value);
+		}
+	
+		return value;
+	}
+	
+	function keysSorter(input) {
+		if (Array.isArray(input)) {
+			return input.sort();
+		}
+	
+		if (typeof input === 'object') {
+			return keysSorter(Object.keys(input))
+				.sort((a, b) => Number(a) - Number(b))
+				.map(key => input[key]);
+		}
+	
+		return input;
+	}
+	
+	function extract(input) {
+		const queryStart = input.indexOf('?');
+		if (queryStart === -1) {
+			return '';
+		}
+		return input.slice(queryStart + 1);
+	}
+	
+	function parse(input, options) {
+		options = Object.assign({decode: true, arrayFormat: 'none'}, options);
+	
+		const formatter = parserForArrayFormat(options);
+	
+		// Create an object with no prototype
+		const ret = Object.create(null);
+	
+		if (typeof input !== 'string') {
+			return ret;
+		}
+	
+		input = input.trim().replace(/^[?#&]/, '');
+	
+		if (!input) {
+			return ret;
+		}
+	
+		for (const param of input.split('&')) {
+			let [key, value] = param.replace(/\+/g, ' ').split('=');
+	
+			// Missing `=` should be `null`:
+			// http://w3.org/TR/2012/WD-url-20120524/#collect-url-parameters
+			value = value === undefined ? null : decode(value, options);
+	
+			formatter(decode(key, options), value, ret);
+		}
+	
+		return Object.keys(ret).sort().reduce((result, key) => {
+			const value = ret[key];
+			if (Boolean(value) && typeof value === 'object' && !Array.isArray(value)) {
+				// Sort object keys, not values
+				result[key] = keysSorter(value);
+			} else {
+				result[key] = value;
+			}
+	
+			return result;
+		}, Object.create(null));
+	}
+	
+	exports.extract = extract;
+	exports.parse = parse;
+	
+	exports.stringify = (obj, options) => {
+		const defaults = {
+			encode: true,
+			strict: true,
+			arrayFormat: 'none'
+		};
+	
+		options = Object.assign(defaults, options);
+	
+		if (options.sort === false) {
+			options.sort = () => {};
+		}
+	
+		const formatter = encoderForArrayFormat(options);
+	
+		return obj ? Object.keys(obj).sort(options.sort).map(key => {
+			const value = obj[key];
+	
+			if (value === undefined) {
+				return '';
+			}
+	
+			if (value === null) {
+				return encode(key, options);
+			}
+	
+			if (Array.isArray(value)) {
+				const result = [];
+	
+				for (const value2 of value.slice()) {
+					if (value2 === undefined) {
+						continue;
+					}
+	
+					result.push(formatter(key, value2, result.length));
+				}
+	
+				return result.join('&');
+			}
+	
+			return encode(key, options) + '=' + encode(value, options);
+		}).filter(x => x.length > 0).join('&') : '';
+	};
+	
+	exports.parseUrl = (input, options) => {
+		return {
+			url: input.split('?')[0] || '',
+			query: parse(extract(input), options)
+		};
+	};
+
+
+/***/ }),
+/* 349 */
+/*!**************************************!*\
+  !*** ./~/strict-uri-encode/index.js ***!
+  \**************************************/
+/***/ (function(module, exports) {
+
+	'use strict';
+	export default function (str) { return encodeURIComponent(str).replace(/[!'()*]/g, x => `%${x.charCodeAt(0).toString(16).toUpperCase()}`); }
+
+
+/***/ }),
+/* 350 */
+/*!*****************************************!*\
+  !*** ./~/decode-uri-component/index.js ***!
+  \*****************************************/
+/***/ (function(module, exports) {
+
+	'use strict';
+	var token = '%[a-f0-9]{2}';
+	var singleMatcher = new RegExp(token, 'gi');
+	var multiMatcher = new RegExp('(' + token + ')+', 'gi');
+	
+	function decodeComponents(components, split) {
+		try {
+			// Try to decode the entire string first
+			return decodeURIComponent(components.join(''));
+		} catch (err) {
+			// Do nothing
+		}
+	
+		if (components.length === 1) {
+			return components;
+		}
+	
+		split = split || 1;
+	
+		// Split the array in 2 parts
+		var left = components.slice(0, split);
+		var right = components.slice(split);
+	
+		return Array.prototype.concat.call([], decodeComponents(left), decodeComponents(right));
+	}
+	
+	function decode(input) {
+		try {
+			return decodeURIComponent(input);
+		} catch (err) {
+			var tokens = input.match(singleMatcher);
+	
+			for (var i = 1; i < tokens.length; i++) {
+				input = decodeComponents(tokens, i).join('');
+	
+				tokens = input.match(singleMatcher);
+			}
+	
+			return input;
+		}
+	}
+	
+	function customDecodeURIComponent(input) {
+		// Keep track of all the replacements and prefill the map with the `BOM`
+		var replaceMap = {
+			'%FE%FF': '\uFFFD\uFFFD',
+			'%FF%FE': '\uFFFD\uFFFD'
+		};
+	
+		var match = multiMatcher.exec(input);
+		while (match) {
+			try {
+				// Decode as big chunks as possible
+				replaceMap[match[0]] = decodeURIComponent(match[0]);
+			} catch (err) {
+				var result = decode(match[0]);
+	
+				if (result !== match[0]) {
+					replaceMap[match[0]] = result;
+				}
+			}
+	
+			match = multiMatcher.exec(input);
+		}
+	
+		// Add `%C2` at the end of the map to make sure it does not replace the combinator before everything else
+		replaceMap['%C2'] = '\uFFFD';
+	
+		var entries = Object.keys(replaceMap);
+	
+		for (var i = 0; i < entries.length; i++) {
+			// Replace all decoded components
+			var key = entries[i];
+			input = input.replace(new RegExp(key, 'g'), replaceMap[key]);
+		}
+	
+		return input;
+	}
+	
+	module.exports = function (encodedURI) {
+		if (typeof encodedURI !== 'string') {
+			throw new TypeError('Expected `encodedURI` to be of type `string`, got `' + typeof encodedURI + '`');
+		}
+	
+		try {
+			encodedURI = encodedURI.replace(/\+/g, ' ');
+	
+			// Try the built in decoder first
+			return decodeURIComponent(encodedURI);
+		} catch (err) {
+			// Fallback to a more advanced decoder
+			return customDecodeURIComponent(encodedURI);
+		}
+	};
+
+
+/***/ }),
+/* 351 */
 /*!**************************************************!*\
   !*** ./src/components/body/CalendarBody.es6.jsx ***!
   \**************************************************/
@@ -60840,15 +61248,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _lodash = __webpack_require__(/*! lodash */ 122);
 	
-	var _axios = __webpack_require__(/*! axios */ 349);
+	var _axios = __webpack_require__(/*! axios */ 352);
 	
 	var _axios2 = _interopRequireDefault(_axios);
 	
-	var _Month = __webpack_require__(/*! ./Month */ 375);
+	var _Month = __webpack_require__(/*! ./Month */ 378);
 	
 	var _Month2 = _interopRequireDefault(_Month);
 	
-	var _Day = __webpack_require__(/*! ./Day */ 376);
+	var _Day = __webpack_require__(/*! ./Day */ 379);
 	
 	var _Day2 = _interopRequireDefault(_Day);
 	
@@ -60947,16 +61355,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = CalendarBody;
 
 /***/ }),
-/* 349 */
+/* 352 */
 /*!**************************!*\
   !*** ./~/axios/index.js ***!
   \**************************/
 /***/ (function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(/*! ./lib/axios */ 350);
+	module.exports = __webpack_require__(/*! ./lib/axios */ 353);
 
 /***/ }),
-/* 350 */
+/* 353 */
 /*!******************************!*\
   !*** ./~/axios/lib/axios.js ***!
   \******************************/
@@ -60964,10 +61372,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	var utils = __webpack_require__(/*! ./utils */ 351);
-	var bind = __webpack_require__(/*! ./helpers/bind */ 352);
-	var Axios = __webpack_require__(/*! ./core/Axios */ 354);
-	var defaults = __webpack_require__(/*! ./defaults */ 355);
+	var utils = __webpack_require__(/*! ./utils */ 354);
+	var bind = __webpack_require__(/*! ./helpers/bind */ 355);
+	var Axios = __webpack_require__(/*! ./core/Axios */ 357);
+	var defaults = __webpack_require__(/*! ./defaults */ 358);
 	
 	/**
 	 * Create an instance of Axios
@@ -61000,15 +61408,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	
 	// Expose Cancel & CancelToken
-	axios.Cancel = __webpack_require__(/*! ./cancel/Cancel */ 372);
-	axios.CancelToken = __webpack_require__(/*! ./cancel/CancelToken */ 373);
-	axios.isCancel = __webpack_require__(/*! ./cancel/isCancel */ 369);
+	axios.Cancel = __webpack_require__(/*! ./cancel/Cancel */ 375);
+	axios.CancelToken = __webpack_require__(/*! ./cancel/CancelToken */ 376);
+	axios.isCancel = __webpack_require__(/*! ./cancel/isCancel */ 372);
 	
 	// Expose all/spread
 	axios.all = function all(promises) {
 	  return Promise.all(promises);
 	};
-	axios.spread = __webpack_require__(/*! ./helpers/spread */ 374);
+	axios.spread = __webpack_require__(/*! ./helpers/spread */ 377);
 	
 	module.exports = axios;
 	
@@ -61017,7 +61425,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 351 */
+/* 354 */
 /*!******************************!*\
   !*** ./~/axios/lib/utils.js ***!
   \******************************/
@@ -61025,8 +61433,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	var bind = __webpack_require__(/*! ./helpers/bind */ 352);
-	var isBuffer = __webpack_require__(/*! is-buffer */ 353);
+	var bind = __webpack_require__(/*! ./helpers/bind */ 355);
+	var isBuffer = __webpack_require__(/*! is-buffer */ 356);
 	
 	/*global toString:true*/
 	
@@ -61329,7 +61737,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 352 */
+/* 355 */
 /*!*************************************!*\
   !*** ./~/axios/lib/helpers/bind.js ***!
   \*************************************/
@@ -61349,7 +61757,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 353 */
+/* 356 */
 /*!******************************!*\
   !*** ./~/is-buffer/index.js ***!
   \******************************/
@@ -61379,7 +61787,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 354 */
+/* 357 */
 /*!***********************************!*\
   !*** ./~/axios/lib/core/Axios.js ***!
   \***********************************/
@@ -61387,10 +61795,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	var defaults = __webpack_require__(/*! ./../defaults */ 355);
-	var utils = __webpack_require__(/*! ./../utils */ 351);
-	var InterceptorManager = __webpack_require__(/*! ./InterceptorManager */ 366);
-	var dispatchRequest = __webpack_require__(/*! ./dispatchRequest */ 367);
+	var defaults = __webpack_require__(/*! ./../defaults */ 358);
+	var utils = __webpack_require__(/*! ./../utils */ 354);
+	var InterceptorManager = __webpack_require__(/*! ./InterceptorManager */ 369);
+	var dispatchRequest = __webpack_require__(/*! ./dispatchRequest */ 370);
 	
 	/**
 	 * Create a new instance of Axios
@@ -61467,7 +61875,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 355 */
+/* 358 */
 /*!*********************************!*\
   !*** ./~/axios/lib/defaults.js ***!
   \*********************************/
@@ -61475,8 +61883,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 	
-	var utils = __webpack_require__(/*! ./utils */ 351);
-	var normalizeHeaderName = __webpack_require__(/*! ./helpers/normalizeHeaderName */ 356);
+	var utils = __webpack_require__(/*! ./utils */ 354);
+	var normalizeHeaderName = __webpack_require__(/*! ./helpers/normalizeHeaderName */ 359);
 	
 	var DEFAULT_CONTENT_TYPE = {
 	  'Content-Type': 'application/x-www-form-urlencoded'
@@ -61492,10 +61900,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var adapter;
 	  if (typeof XMLHttpRequest !== 'undefined') {
 	    // For browsers use XHR adapter
-	    adapter = __webpack_require__(/*! ./adapters/xhr */ 357);
+	    adapter = __webpack_require__(/*! ./adapters/xhr */ 360);
 	  } else if (typeof process !== 'undefined') {
 	    // For node use HTTP adapter
-	    adapter = __webpack_require__(/*! ./adapters/http */ 357);
+	    adapter = __webpack_require__(/*! ./adapters/http */ 360);
 	  }
 	  return adapter;
 	}
@@ -61573,7 +61981,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../process/browser.js */ 127)))
 
 /***/ }),
-/* 356 */
+/* 359 */
 /*!****************************************************!*\
   !*** ./~/axios/lib/helpers/normalizeHeaderName.js ***!
   \****************************************************/
@@ -61581,7 +61989,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	var utils = __webpack_require__(/*! ../utils */ 351);
+	var utils = __webpack_require__(/*! ../utils */ 354);
 	
 	module.exports = function normalizeHeaderName(headers, normalizedName) {
 	  utils.forEach(headers, function processHeader(value, name) {
@@ -61594,7 +62002,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 357 */
+/* 360 */
 /*!*************************************!*\
   !*** ./~/axios/lib/adapters/xhr.js ***!
   \*************************************/
@@ -61602,13 +62010,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
 	
-	var utils = __webpack_require__(/*! ./../utils */ 351);
-	var settle = __webpack_require__(/*! ./../core/settle */ 358);
-	var buildURL = __webpack_require__(/*! ./../helpers/buildURL */ 361);
-	var parseHeaders = __webpack_require__(/*! ./../helpers/parseHeaders */ 362);
-	var isURLSameOrigin = __webpack_require__(/*! ./../helpers/isURLSameOrigin */ 363);
-	var createError = __webpack_require__(/*! ../core/createError */ 359);
-	var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(/*! ./../helpers/btoa */ 364);
+	var utils = __webpack_require__(/*! ./../utils */ 354);
+	var settle = __webpack_require__(/*! ./../core/settle */ 361);
+	var buildURL = __webpack_require__(/*! ./../helpers/buildURL */ 364);
+	var parseHeaders = __webpack_require__(/*! ./../helpers/parseHeaders */ 365);
+	var isURLSameOrigin = __webpack_require__(/*! ./../helpers/isURLSameOrigin */ 366);
+	var createError = __webpack_require__(/*! ../core/createError */ 362);
+	var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(/*! ./../helpers/btoa */ 367);
 	
 	module.exports = function xhrAdapter(config) {
 	  return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -61705,7 +62113,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // This is only done if running in a standard browser environment.
 	    // Specifically not if we're in a web worker, or react-native.
 	    if (utils.isStandardBrowserEnv()) {
-	      var cookies = __webpack_require__(/*! ./../helpers/cookies */ 365);
+	      var cookies = __webpack_require__(/*! ./../helpers/cookies */ 368);
 	
 	      // Add xsrf header
 	      var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -61784,7 +62192,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../../process/browser.js */ 127)))
 
 /***/ }),
-/* 358 */
+/* 361 */
 /*!************************************!*\
   !*** ./~/axios/lib/core/settle.js ***!
   \************************************/
@@ -61792,7 +62200,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	var createError = __webpack_require__(/*! ./createError */ 359);
+	var createError = __webpack_require__(/*! ./createError */ 362);
 	
 	/**
 	 * Resolve or reject a Promise based on response status.
@@ -61819,7 +62227,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 359 */
+/* 362 */
 /*!*****************************************!*\
   !*** ./~/axios/lib/core/createError.js ***!
   \*****************************************/
@@ -61827,7 +62235,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	var enhanceError = __webpack_require__(/*! ./enhanceError */ 360);
+	var enhanceError = __webpack_require__(/*! ./enhanceError */ 363);
 	
 	/**
 	 * Create an Error with the specified message, config, error code, request and response.
@@ -61846,7 +62254,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 360 */
+/* 363 */
 /*!******************************************!*\
   !*** ./~/axios/lib/core/enhanceError.js ***!
   \******************************************/
@@ -61876,7 +62284,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 361 */
+/* 364 */
 /*!*****************************************!*\
   !*** ./~/axios/lib/helpers/buildURL.js ***!
   \*****************************************/
@@ -61884,7 +62292,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	var utils = __webpack_require__(/*! ./../utils */ 351);
+	var utils = __webpack_require__(/*! ./../utils */ 354);
 	
 	function encode(val) {
 	  return encodeURIComponent(val).
@@ -61951,7 +62359,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 362 */
+/* 365 */
 /*!*********************************************!*\
   !*** ./~/axios/lib/helpers/parseHeaders.js ***!
   \*********************************************/
@@ -61959,7 +62367,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	var utils = __webpack_require__(/*! ./../utils */ 351);
+	var utils = __webpack_require__(/*! ./../utils */ 354);
 	
 	// Headers whose duplicates are ignored by node
 	// c.f. https://nodejs.org/api/http.html#http_message_headers
@@ -62013,7 +62421,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 363 */
+/* 366 */
 /*!************************************************!*\
   !*** ./~/axios/lib/helpers/isURLSameOrigin.js ***!
   \************************************************/
@@ -62021,7 +62429,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	var utils = __webpack_require__(/*! ./../utils */ 351);
+	var utils = __webpack_require__(/*! ./../utils */ 354);
 	
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -62090,7 +62498,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 364 */
+/* 367 */
 /*!*************************************!*\
   !*** ./~/axios/lib/helpers/btoa.js ***!
   \*************************************/
@@ -62135,7 +62543,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 365 */
+/* 368 */
 /*!****************************************!*\
   !*** ./~/axios/lib/helpers/cookies.js ***!
   \****************************************/
@@ -62143,7 +62551,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	var utils = __webpack_require__(/*! ./../utils */ 351);
+	var utils = __webpack_require__(/*! ./../utils */ 354);
 	
 	module.exports = (
 	  utils.isStandardBrowserEnv() ?
@@ -62197,7 +62605,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 366 */
+/* 369 */
 /*!************************************************!*\
   !*** ./~/axios/lib/core/InterceptorManager.js ***!
   \************************************************/
@@ -62205,7 +62613,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	var utils = __webpack_require__(/*! ./../utils */ 351);
+	var utils = __webpack_require__(/*! ./../utils */ 354);
 	
 	function InterceptorManager() {
 	  this.handlers = [];
@@ -62258,7 +62666,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 367 */
+/* 370 */
 /*!*********************************************!*\
   !*** ./~/axios/lib/core/dispatchRequest.js ***!
   \*********************************************/
@@ -62266,12 +62674,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	var utils = __webpack_require__(/*! ./../utils */ 351);
-	var transformData = __webpack_require__(/*! ./transformData */ 368);
-	var isCancel = __webpack_require__(/*! ../cancel/isCancel */ 369);
-	var defaults = __webpack_require__(/*! ../defaults */ 355);
-	var isAbsoluteURL = __webpack_require__(/*! ./../helpers/isAbsoluteURL */ 370);
-	var combineURLs = __webpack_require__(/*! ./../helpers/combineURLs */ 371);
+	var utils = __webpack_require__(/*! ./../utils */ 354);
+	var transformData = __webpack_require__(/*! ./transformData */ 371);
+	var isCancel = __webpack_require__(/*! ../cancel/isCancel */ 372);
+	var defaults = __webpack_require__(/*! ../defaults */ 358);
+	var isAbsoluteURL = __webpack_require__(/*! ./../helpers/isAbsoluteURL */ 373);
+	var combineURLs = __webpack_require__(/*! ./../helpers/combineURLs */ 374);
 	
 	/**
 	 * Throws a `Cancel` if cancellation has been requested.
@@ -62353,7 +62761,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 368 */
+/* 371 */
 /*!*******************************************!*\
   !*** ./~/axios/lib/core/transformData.js ***!
   \*******************************************/
@@ -62361,7 +62769,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	var utils = __webpack_require__(/*! ./../utils */ 351);
+	var utils = __webpack_require__(/*! ./../utils */ 354);
 	
 	/**
 	 * Transform the data for a request or a response
@@ -62382,7 +62790,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 369 */
+/* 372 */
 /*!****************************************!*\
   !*** ./~/axios/lib/cancel/isCancel.js ***!
   \****************************************/
@@ -62396,7 +62804,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 370 */
+/* 373 */
 /*!**********************************************!*\
   !*** ./~/axios/lib/helpers/isAbsoluteURL.js ***!
   \**********************************************/
@@ -62419,7 +62827,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 371 */
+/* 374 */
 /*!********************************************!*\
   !*** ./~/axios/lib/helpers/combineURLs.js ***!
   \********************************************/
@@ -62442,7 +62850,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 372 */
+/* 375 */
 /*!**************************************!*\
   !*** ./~/axios/lib/cancel/Cancel.js ***!
   \**************************************/
@@ -62470,7 +62878,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 373 */
+/* 376 */
 /*!*******************************************!*\
   !*** ./~/axios/lib/cancel/CancelToken.js ***!
   \*******************************************/
@@ -62478,7 +62886,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	var Cancel = __webpack_require__(/*! ./Cancel */ 372);
+	var Cancel = __webpack_require__(/*! ./Cancel */ 375);
 	
 	/**
 	 * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -62536,7 +62944,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 374 */
+/* 377 */
 /*!***************************************!*\
   !*** ./~/axios/lib/helpers/spread.js ***!
   \***************************************/
@@ -62572,7 +62980,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 375 */
+/* 378 */
 /*!*******************************************!*\
   !*** ./src/components/body/Month.es6.jsx ***!
   \*******************************************/
@@ -62597,11 +63005,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _lodash = __webpack_require__(/*! lodash */ 122);
 	
-	var _Day = __webpack_require__(/*! ./Day */ 376);
+	var _Day = __webpack_require__(/*! ./Day */ 379);
 	
 	var _Day2 = _interopRequireDefault(_Day);
 	
-	var _Slot = __webpack_require__(/*! ./Slot */ 382);
+	var _Slot = __webpack_require__(/*! ./Slot */ 386);
 	
 	var _Slot2 = _interopRequireDefault(_Slot);
 	
@@ -62629,9 +63037,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _createClass(Month, [{
 	        key: 'renderDay',
 	        value: function renderDay(date, style) {
-	            var timeSlice = (0, _lodash.find)(this.props.timeSlices, function (x) {
-	                return x.date.isSame(date, 'days');
-	            });
+	            // const timeSlice = find(this.props.timeSlices, x => x.date.isSame(date, 'days'));
 	            var bookings = (0, _lodash.filter)(this.props.bookings, function (x) {
 	                return x.startDate.isSame(date, 'days');
 	            });
@@ -62744,7 +63150,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Month;
 
 /***/ }),
-/* 376 */
+/* 379 */
 /*!*****************************************!*\
   !*** ./src/components/body/Day.es6.jsx ***!
   \*****************************************/
@@ -62771,13 +63177,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _moment2 = _interopRequireDefault(_moment);
 	
-	var _bemClassname = __webpack_require__(/*! bem-classname */ 377);
+	var _bemClassname = __webpack_require__(/*! bem-classname */ 380);
 	
 	var _bemClassname2 = _interopRequireDefault(_bemClassname);
 	
 	var _lodash = __webpack_require__(/*! lodash */ 122);
 	
-	var _Slot = __webpack_require__(/*! ./Slot */ 382);
+	var _reactSpotifyPlayer = __webpack_require__(/*! react-spotify-player */ 385);
+	
+	var _reactSpotifyPlayer2 = _interopRequireDefault(_reactSpotifyPlayer);
+	
+	var _Slot = __webpack_require__(/*! ./Slot */ 386);
 	
 	var _Slot2 = _interopRequireDefault(_Slot);
 	
@@ -62785,25 +63195,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _constant = __webpack_require__(/*! ../constant */ 344);
 	
-	var _axios = __webpack_require__(/*! axios */ 349);
+	var _axios = __webpack_require__(/*! axios */ 352);
 	
 	var _axios2 = _interopRequireDefault(_axios);
 	
-	var _Gallery = __webpack_require__(/*! ./Gallery */ 383);
+	var _queryString = __webpack_require__(/*! query-string */ 348);
 	
-	var _Gallery2 = _interopRequireDefault(_Gallery);
-	
-	var _glyphicons = __webpack_require__(/*! glyphicons */ 385);
-	
-	var _glyphicons2 = _interopRequireDefault(_glyphicons);
-	
-	var _Profile = __webpack_require__(/*! ./Profile */ 386);
-	
-	var _Profile2 = _interopRequireDefault(_Profile);
+	var _queryString2 = _interopRequireDefault(_queryString);
 	
 	var _spotify = __webpack_require__(/*! ./spotify */ 387);
 	
-	var _spotify2 = _interopRequireDefault(_spotify);
+	var _reactLoadScript = __webpack_require__(/*! react-load-script */ 388);
+	
+	var _reactLoadScript2 = _interopRequireDefault(_reactLoadScript);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -62816,35 +63220,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	var Day = (_temp = _class = function (_React$Component) {
 	    _inherits(Day, _React$Component);
 	
-	    function Day() {
+	    function Day(props) {
 	        _classCallCheck(this, Day);
 	
-	        var _this = _possibleConstructorReturn(this, (Day.__proto__ || Object.getPrototypeOf(Day)).call(this));
+	        var parsed = _queryString2.default.parse(location.search);
+	        var token = parsed.access_token;
+	
+	        var _this = _possibleConstructorReturn(this, (Day.__proto__ || Object.getPrototypeOf(Day)).call(this, props));
 	
 	        _this.startDiary = '08:00';
 	        _this.endDiary = '20:00';
 	
 	        _this.state = {
-	            songs: [],
-	            token: "",
-	            deviceId: "",
-	            loggedIn: false,
-	            error: "",
-	            trackName: "Track Name",
-	            artistName: "Artist Name",
-	            albumName: "Album Name",
-	            playing: false,
-	            position: 0,
-	            duration: 0,
-	            query: '',
-	            artist: null,
-	            errorMessage: '',
-	            tracks: undefined
+	            track: null,
+	            token: token
 	
 	        };
-	        _this.playerCheckInterval = null;
-	        _this.updateProfile = _this.updateProfile.bind(_this);
-	        _this.search = _this.search.bind(_this);
+	        console.log("dfdf");
+	        console.log(token);
 	        return _this;
 	    }
 	
@@ -62890,6 +63283,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }) : undefined;
 	        }
 	    }, {
+	        key: 'spotifyPlayer',
+	        value: function spotifyPlayer() {
+	            var play = function play(_ref) {
+	                var spotify_uri = _ref.spotify_uri,
+	                    _ref$playerInstance$_ = _ref.playerInstance._options,
+	                    getOAuthToken = _ref$playerInstance$_.getOAuthToken,
+	                    id = _ref$playerInstance$_.id;
+	
+	                getOAuthToken(function (access_token) {
+	                    fetch('https://api.spotify.com/v1/me/player/play?device_id=' + id, {
+	                        method: 'PUT',
+	                        body: JSON.stringify({ uris: [spotify_uri] }),
+	                        headers: {
+	                            'Content-Type': 'application/json',
+	                            'Authorization': 'Bearer ' + access_token
+	                        }
+	                    });
+	                });
+	            };
+	
+	            play({
+	                playerInstance: new Spotify.Player({ name: "..." }),
+	                spotify_uri: 'spotify:track:7xGfFoTpQ2E7fRF5lN10tr'
+	            });
+	        }
+	    }, {
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
 	            var _this2 = this;
@@ -62901,13 +63320,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var randomYear = Math.floor(Math.random() * (year - min + 1)) + min;
 	            var yearsago = year - randomYear;
 	            var release_date_min = randomYear + month + day;
-	            console.log("hello" + release_date_min);
+	            // console.log("hello" + release_date_min)
 	            var release_date_max = randomYear + month + day;
-	            console.log(day);
-	            console.log(month);
-	            console.log(year);
-	            console.log(randomYear);
-	            console.log(yearsago);
+	            // console.log(day)
+	            // console.log(month)
+	            // console.log(year)
+	            // console.log(randomYear)
+	            // console.log(yearsago)
+	
 	
 	            _axios2.default.get('https://api.musixmatch.com/ws/1.1/track.search', {
 	                params: {
@@ -62915,6 +63335,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    f_track_release_group_first_release_date_min: release_date_min,
 	                    f_track_release_group_first_release_date_max: release_date_max,
 	                    format: "JSON",
+	                    timeout: 10000,
 	                    headers: {
 	                        'Access-Control-Allow-Origin': '*'
 	                    }
@@ -62925,196 +63346,53 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    return {
 	                        songs: res.data
 	                    };
+	                    console.log(songs);
 	                });
-	                var albums = "Album Title: " + res.data.message.body.track_list[5].track.album_name;
-	                var artist = " Artist: " + res.data.message.body.track_list[5].track.artist_name;
-	                var track = " Track Name: " + res.data.message.body.track_list[5].track.track_name;
-	                var first_release_date = " First release date: " + res.data.message.body.track_list[5].track.first_release_date;
+	                var albums = res.data.message.body.track_list[5].track.album_name;
+	                var artistname = res.data.message.body.track_list[5].track.artist_name;
+	                var track = res.data.message.body.track_list[5].track.track_name;
+	                var first_release_date = res.data.message.body.track_list[5].track.first_release_date;
 	                var yearsago = year - randomYear;
-	
-	                _this2.setState({ albums: albums, artist: artist, track: track, first_release_date: first_release_date, yearsago: yearsago });
-	
-	                //   console.log(res.data.message.body.track_list)
-	                console.log(albums);
-	            }).catch(function (error) {
-	                // console.log(error);
-	            });
-	        }
-	    }, {
-	        key: 'handleLogin',
-	        value: function handleLogin() {
-	            var _this3 = this;
-	
-	            if (this.state.token !== "") {
-	                this.setState({ loggedIn: true });
-	                this.playerCheckInterval = setInterval(function () {
-	                    return _this3.checkForPlayer();
-	                }, 1000);
-	            }
-	        }
-	    }, {
-	        key: 'checkForPlayer',
-	        value: function checkForPlayer() {
-	            var token = this.state.token;
-	
-	
-	            if (window.Spotify !== null) {
-	                clearInterval(this.playerCheckInterval);
-	                this.player = new window.Spotify.Player({
-	                    name: "PLAYDates player",
-	                    getOAuthToken: function getOAuthToken(cb) {
-	                        cb(token);
-	                    }
-	                });
-	                this.createEventHandlers();
-	
-	                // finally, connect!
-	                this.player.connect();
-	            }
-	        }
-	    }, {
-	        key: 'createEventHandlers',
-	        value: function createEventHandlers() {
-	            var _this4 = this;
-	
-	            this.player.on('initialization_error', function (e) {
-	                console.error(e);
-	            });
-	            this.player.on('authentication_error', function (e) {
-	                console.error(e);
-	                _this4.setState({ loggedIn: false });
-	            });
-	            this.player.on('account_error', function (e) {
-	                console.error(e);
-	            });
-	            this.player.on('playback_error', function (e) {
-	                console.error(e);
-	            });
-	
-	            // Playback status updates
-	            this.player.on('player_state_changed', function (state) {
-	                return _this4.onStateChanged(state);
-	            });
-	
-	            // Ready
-	            this.player.on('ready', function (data) {
-	                var device_id = data.device_id;
-	
-	                console.log("Let the music play on!");
-	                _this4.setState({ deviceId: device_id });
-	                _this4.transferPlaybackHere();
-	            });
-	        }
-	    }, {
-	        key: 'onStateChanged',
-	        value: function onStateChanged(state) {
-	            // if we're no longer listening to music, we'll get a null state.
-	            if (state !== null) {
-	                var _state$track_window = state.track_window,
-	                    currentTrack = _state$track_window.current_track,
-	                    position = _state$track_window.position,
-	                    duration = _state$track_window.duration;
-	
-	                var trackName = currentTrack.name;
-	                var albumName = currentTrack.album.name;
-	                var artistName = currentTrack.artists.map(function (artist) {
-	                    return artist.name;
-	                }).join(", ");
-	                var playing = !state.paused;
-	                this.setState({
-	                    position: position,
-	                    duration: duration,
-	                    trackName: trackName,
-	                    albumName: albumName,
-	                    artistName: artistName,
-	                    playing: playing
-	                });
-	            }
-	        }
-	    }, {
-	        key: 'onPrevClick',
-	        value: function onPrevClick() {
-	            this.player.previousTrack();
-	        }
-	    }, {
-	        key: 'onPlayClick',
-	        value: function onPlayClick() {
-	            this.player.togglePlay();
-	        }
-	    }, {
-	        key: 'onNextClick',
-	        value: function onNextClick() {
-	            this.player.nextTrack();
-	        }
-	    }, {
-	        key: 'transferPlaybackHere',
-	        value: function transferPlaybackHere() {
-	            var _state = this.state,
-	                deviceId = _state.deviceId,
-	                token = _state.token;
-	
-	            fetch("https://api.spotify.com/v1/me/player", {
-	                method: "PUT",
-	                headers: {
-	                    authorization: 'Bearer ' + token,
-	                    "Content-Type": "application/json"
-	                },
-	                body: JSON.stringify({
-	                    "device_ids": [deviceId],
-	                    "play": true
-	                })
-	            });
+	                var songsdata = res.data;
+	                console.log(songsdata);
+	                _this2.setState({ albums: albums, artistname: artistname, track: track, first_release_date: first_release_date, yearsago: yearsago });
+	                _this2.search();
+	            }).catch(function (error) {});
 	        }
 	    }, {
 	        key: 'search',
 	        value: function search() {
-	            var _this5 = this;
+	            var _this3 = this;
 	
-	            var result = _spotify2.default.search(this.state.query).then(function (json) {
-	                return _this5.handleSearch(json);
-	            }).catch(function (e) {
-	                _this5.displayErrorMessage('Please enter a search query');
-	            });
-	            return result;
-	        }
-	    }, {
-	        key: 'handleSearch',
-	        value: function handleSearch(artistJSON) {
-	            var artist = artistJSON.artists.items[0];
-	            if (artist) {
-	                this.loadTracks(artist.id);
-	                return this.updateProfile(artistJSON);
-	            } else {
-	                this.displayErrorMessage('Artist not found, please try again');
-	                return false;
-	            }
-	        }
-	    }, {
-	        key: 'loadTracks',
-	        value: function loadTracks(artistId) {
-	            var _this6 = this;
+	            var parsed = _queryString2.default.parse(window.location.search);
+	            var accessToken = parsed.access_token;
+	            console.log(accessToken);
+	            console.log('this.state', this.state);
+	            var BASE_URL = 'https://api.spotify.com/v1/search?';
+	            var FETCH_URL = BASE_URL + 'q=album:' + this.state.albums + '%20track:' + this.state.track + '&type=track&limit=1';
+	            // console.log(FETCH_URL)
+	            // var accessToken = 'BQCB2U_j11KSeQf36hdnU7dyFt-BW1fSbVM49O3IjGSV0fUCB5bKoJVa9q_qM0iuyJs-cDJRZLHGpMU8gdWGKHx7C2V0gCd3Qkfm4ykTH32Enu_udann4cwElOTDzcTHuBNaYz4DEZxnyXh3LBsWXOrLyhj1-w'
 	
-	            _spotify2.default.getTracks(artistId).then(function (json) {
-	                _this6.setState({
-	                    tracks: json.tracks
-	                });
-	            });
-	        }
-	    }, {
-	        key: 'updateProfile',
-	        value: function updateProfile(artistJSON) {
-	            var artist = artistJSON.artists.items[0];
-	            this.setState({
-	                artist: artist,
-	                errorMessage: ''
-	            });
-	            return artistJSON;
-	        }
-	    }, {
-	        key: 'displayErrorMessage',
-	        value: function displayErrorMessage(message) {
-	            this.setState({
-	                errorMessage: message
+	            var myOptions = {
+	                method: 'GET',
+	                headers: {
+	                    'Authorization': 'Bearer ' + accessToken
+	                },
+	                mode: 'cors',
+	                cache: 'default'
+	            };
+	            fetch(FETCH_URL, myOptions).then(function (response) {
+	                return response.json();
+	            }).then(function (json) {
+	                console.log(json);
+	                var spotifyTrack = json.tracks.items[0].external_urls.spotify;
+	                var spotifyTrackLink = json.tracks.items[0].uri;
+	                console.log(spotifyTrack);
+	                console.log(spotifyTrackLink);
+	
+	                _this3.setState({ spotifyTrack: spotifyTrack, spotifyTrackLink: spotifyTrackLink, accessToken: accessToken });
+	                console.log({ accessToken: accessToken });
+	                console.log(spotifyTrackLink);
 	            });
 	        }
 	    }, {
@@ -63167,19 +63445,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            var _this7 = this;
 	
-	            var _state2 = this.state,
-	                token = _state2.token,
-	                loggedIn = _state2.loggedIn,
-	                artistName = _state2.artistName,
-	                trackName = _state2.trackName,
-	                albumName = _state2.albumName,
-	                error = _state2.error,
-	                position = _state2.position,
-	                duration = _state2.duration,
-	                playing = _state2.playing;
-	
+	            var playersize = "compact";
+	            var theme = 'black'; // or 'white'
+	            var view = 'coverart'; // or 'coverart'
+	            var spotifyTrack = {
+	                spotifyTrack: ''
+	            };
+	            var trackname = {
+	                name: ''
+	            };
+	            if (this.state.track !== null) {
+	                trackname = this.state.track;
+	            }
 	            var slots = [];
 	
 	            if (this.props.date) {
@@ -63188,7 +63466,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	                var numberOfColumn = endDiary.diff(startDiary, 'minutes') / this.props.timeSlot;
 	                var currentSlot = this.nextSlot(startDiary);
-	
+	                // console.log(currentSlot)
 	                if (this.isDayOff() || !this.props.displayPast && this.props.date.isBefore((0, _moment2.default)(), 'day')) {
 	                    return null;
 	                } else {
@@ -63287,177 +63565,62 @@ return /******/ (function(modules) { // webpackBootstrap
 	                this.renderHeader(),
 	                _react2.default.createElement(
 	                    'div',
-	                    { className: 'musix' },
-	                    _react2.default.createElement(
-	                        'p',
-	                        null,
-	                        'This Song was released today ',
-	                        this.state.yearsago,
-	                        ' years ago!'
-	                    ),
-	                    _react2.default.createElement(
-	                        'p',
-	                        null,
-	                        this.state.albums
-	                    ),
-	                    _react2.default.createElement(
-	                        'p',
-	                        null,
-	                        this.state.artist
-	                    ),
-	                    _react2.default.createElement(
-	                        'p',
-	                        null,
-	                        this.state.track
-	                    ),
-	                    _react2.default.createElement(
-	                        'p',
-	                        null,
-	                        this.state.first_release_date
-	                    )
-	                ),
-	                _react2.default.createElement(
-	                    'div',
-	                    { className: 'spotifyPlayer' },
+	                    { className: 'container' },
 	                    _react2.default.createElement(
 	                        'div',
-	                        { className: 'tc pa5-ns pa3' },
+	                        { className: 'musix' },
 	                        _react2.default.createElement(
-	                            'div',
-	                            { id: 'App-title', className: 'f3' },
-	                            'Search Spotify API for an Artist and Preview their Top Tracks'
-	                        ),
-	                        _react2.default.createElement(
-	                            'form',
-	                            { onSubmit: function onSubmit(e) {
-	                                    e.preventDefault();_this7.search();
-	                                } },
-	                            _react2.default.createElement('input', {
-	                                className: 'db fl h2 w-90 ba bw2 b--lightest-blue',
-	                                type: 'text',
-	                                placeholder: 'Search for an artist',
-	                                value: this.state.query,
-	                                onChange: function onChange(event) {
-	                                    _this7.setState({ query: event.target.value });
-	                                } }),
+	                            'p',
+	                            null,
+	                            'This Song released today ',
 	                            _react2.default.createElement(
-	                                'button',
-	                                {
-	                                    className: 'db fl h2 button-reset border-box w-10 ba bw2 b--lightest-blue' },
-	                                _glyphicons2.default.magnifyingGlass
-	                            )
-	                        ),
-	                        _react2.default.createElement(
-	                            'div',
-	                            { className: 'h1 cb error' },
-	                            this.state.errorMessage
-	                        ),
-	                        _react2.default.createElement(
-	                            'div',
-	                            { id: 'Profile' },
-	                            _react2.default.createElement(_Profile2.default, { artist: this.state.artist })
-	                        ),
-	                        _react2.default.createElement(_Gallery2.default, { tracks: this.state.tracks })
-	                    ),
-	                    _react2.default.createElement(
-	                        'div',
-	                        { className: 'App-header' },
-	                        _react2.default.createElement(
-	                            'h2',
-	                            null,
-	                            'Now Playing'
-	                        ),
-	                        _react2.default.createElement(
-	                            'p',
-	                            null,
-	                            'A Spotify Web Playback API Demo.'
-	                        )
-	                    ),
-	                    error && _react2.default.createElement(
-	                        'p',
-	                        null,
-	                        'Error: ',
-	                        error
-	                    ),
-	                    loggedIn ? _react2.default.createElement(
-	                        'div',
-	                        null,
-	                        _react2.default.createElement(
-	                            'p',
-	                            null,
-	                            'Artist: ',
-	                            artistName
-	                        ),
-	                        _react2.default.createElement(
-	                            'p',
-	                            null,
-	                            'Track: ',
-	                            trackName
+	                                'span',
+	                                { className: 'yearsago' },
+	                                this.state.yearsago
+	                            ),
+	                            ' years ago!'
 	                        ),
 	                        _react2.default.createElement(
 	                            'p',
 	                            null,
 	                            'Album: ',
-	                            albumName
+	                            this.state.albums
 	                        ),
 	                        _react2.default.createElement(
 	                            'p',
 	                            null,
-	                            _react2.default.createElement(
-	                                'button',
-	                                { onClick: function onClick() {
-	                                        return _this7.onPrevClick();
-	                                    } },
-	                                'Previous'
-	                            ),
-	                            _react2.default.createElement(
-	                                'button',
-	                                { onClick: function onClick() {
-	                                        return _this7.onPlayClick();
-	                                    } },
-	                                playing ? "Pause" : "Play"
-	                            ),
-	                            _react2.default.createElement(
-	                                'button',
-	                                { onClick: function onClick() {
-	                                        return _this7.onNextClick();
-	                                    } },
-	                                'Next'
-	                            )
+	                            'Artist: ',
+	                            this.state.artistname
+	                        ),
+	                        _react2.default.createElement(
+	                            'p',
+	                            null,
+	                            'Track: ',
+	                            this.state.track
 	                        )
-	                    ) : _react2.default.createElement(
+	                    ),
+	                    _react2.default.createElement('div', null),
+	                    _react2.default.createElement(
 	                        'div',
 	                        null,
 	                        _react2.default.createElement(
-	                            'p',
-	                            { className: 'App-intro' },
-	                            'Enter your Spotify access token. Get it from',
-	                            " ",
+	                            'div',
+	                            { className: 'spotifylink' },
 	                            _react2.default.createElement(
 	                                'a',
-	                                { href: 'https://beta.developer.spotify.com/documentation/web-playback-sdk/quick-start/#authenticating-with-spotify' },
-	                                'here'
-	                            ),
-	                            '.'
-	                        ),
-	                        _react2.default.createElement(
-	                            'p',
-	                            null,
-	                            _react2.default.createElement('input', { type: 'text', value: token, onChange: function onChange(e) {
-	                                    return _this7.setState({ token: e.target.value });
-	                                } })
-	                        ),
-	                        _react2.default.createElement(
-	                            'p',
-	                            null,
-	                            _react2.default.createElement(
-	                                'button',
-	                                { onClick: function onClick() {
-	                                        return _this7.handleLogin();
-	                                    } },
-	                                'Go'
+	                                { href: this.state.spotifyTrack },
+	                                'Listen to this song on Spotify'
 	                            )
-	                        )
+	                        ),
+	                        ' ',
+	                        _react2.default.createElement('br', null),
+	                        _react2.default.createElement(_reactSpotifyPlayer2.default, {
+	                            uri: this.state.spotifyTrackLink,
+	                            size: playersize,
+	                            view: view,
+	                            theme: theme
+	                            // getOAuthToken={this.state.accessToken}
+	                        })
 	                    )
 	                ),
 	                _react2.default.createElement(
@@ -63478,7 +63641,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Day;
 
 /***/ }),
-/* 377 */
+/* 380 */
 /*!***************************************!*\
   !*** ./~/bem-classname/dist/index.js ***!
   \***************************************/
@@ -63493,11 +63656,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
-	var _applyMods = __webpack_require__(/*! ./applyMods */ 378);
+	var _applyMods = __webpack_require__(/*! ./applyMods */ 381);
 	
 	var _applyMods2 = _interopRequireDefault(_applyMods);
 	
-	var _isMods = __webpack_require__(/*! ./isMods */ 381);
+	var _isMods = __webpack_require__(/*! ./isMods */ 384);
 	
 	var _isMods2 = _interopRequireDefault(_isMods);
 	
@@ -63532,7 +63695,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ }),
-/* 378 */
+/* 381 */
 /*!*******************************************!*\
   !*** ./~/bem-classname/dist/applyMods.js ***!
   \*******************************************/
@@ -63547,11 +63710,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
-	var _flattenMods = __webpack_require__(/*! ./flattenMods */ 379);
+	var _flattenMods = __webpack_require__(/*! ./flattenMods */ 382);
 	
 	var _flattenMods2 = _interopRequireDefault(_flattenMods);
 	
-	var _identity = __webpack_require__(/*! ./identity */ 380);
+	var _identity = __webpack_require__(/*! ./identity */ 383);
 	
 	var _identity2 = _interopRequireDefault(_identity);
 	
@@ -63574,7 +63737,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ }),
-/* 379 */
+/* 382 */
 /*!*********************************************!*\
   !*** ./~/bem-classname/dist/flattenMods.js ***!
   \*********************************************/
@@ -63600,7 +63763,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ }),
-/* 380 */
+/* 383 */
 /*!******************************************!*\
   !*** ./~/bem-classname/dist/identity.js ***!
   \******************************************/
@@ -63620,7 +63783,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ }),
-/* 381 */
+/* 384 */
 /*!****************************************!*\
   !*** ./~/bem-classname/dist/isMods.js ***!
   \****************************************/
@@ -63640,7 +63803,134 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ }),
-/* 382 */
+/* 385 */
+/*!******************************************************!*\
+  !*** ./~/react-spotify-player/dist/SpotifyPlayer.js ***!
+  \******************************************************/
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(/*! react */ 3);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _propTypes = __webpack_require__(/*! prop-types */ 125);
+	
+	var _propTypes2 = _interopRequireDefault(_propTypes);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /* eslint react/no-unknown-property: 0 */
+	
+	/**
+	 * Spotify player iframe widget
+	 *
+	 * @author Alexander Wallin <office@alexanderwallin.com>
+	 * @see https://developer.spotify.com/technologies/widgets/spotify-play-button/
+	 */
+	
+	// Dimension prop type
+	var dimensionPropType = _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.string]);
+	
+	// Size presets, defined by Spotify
+	var sizePresets = {
+	  large: {
+	    width: 300,
+	    height: 380
+	  },
+	  compact: {
+	    width: 300,
+	    height: 80
+	  }
+	};
+	
+	/**
+	 * SpotifyPlayer class
+	 */
+	
+	var SpotifyPlayer = function (_Component) {
+	  _inherits(SpotifyPlayer, _Component);
+	
+	  function SpotifyPlayer() {
+	    _classCallCheck(this, SpotifyPlayer);
+	
+	    return _possibleConstructorReturn(this, (SpotifyPlayer.__proto__ || Object.getPrototypeOf(SpotifyPlayer)).apply(this, arguments));
+	  }
+	
+	  _createClass(SpotifyPlayer, [{
+	    key: 'render',
+	
+	
+	    // ------------------------------------------------------
+	    // Render
+	    // ------------------------------------------------------
+	
+	    value: function render() {
+	      var _props = this.props,
+	          uri = _props.uri,
+	          view = _props.view,
+	          theme = _props.theme;
+	      var size = this.props.size;
+	
+	
+	      if (typeof size === 'string') {
+	        size = sizePresets[size];
+	      }
+	
+	      return _react2.default.createElement('iframe', {
+	        title: 'Spotify',
+	        className: 'SpotifyPlayer',
+	        src: 'https://embed.spotify.com/?uri=' + uri + '&view=' + view + '&theme=' + theme,
+	        width: size.width,
+	        height: size.height,
+	        frameBorder: '0',
+	        allowTransparency: 'true'
+	      });
+	    }
+	  }]);
+	
+	  return SpotifyPlayer;
+	}(_react.Component);
+	
+	SpotifyPlayer.propTypes = {
+	
+	  // Spotify URI
+	  uri: _propTypes2.default.string.isRequired,
+	
+	  // Size as either a preset or as custom dimensions
+	  size: _propTypes2.default.oneOfType([_propTypes2.default.oneOf(['large', 'compact']), _propTypes2.default.shape({
+	    width: dimensionPropType,
+	    height: dimensionPropType
+	  })]),
+	
+	  // View
+	  view: _propTypes2.default.oneOf(['list', 'coverart']),
+	
+	  // Theme
+	  theme: _propTypes2.default.oneOf(['black', 'white'])
+	};
+	
+	SpotifyPlayer.defaultProps = {
+	  size: 'large',
+	  view: 'list',
+	  theme: 'black'
+	};
+	
+	exports.default = SpotifyPlayer;
+
+/***/ }),
+/* 386 */
 /*!******************************************!*\
   !*** ./src/components/body/Slot.es6.jsx ***!
   \******************************************/
@@ -63663,7 +63953,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _moment2 = _interopRequireDefault(_moment);
 	
-	var _bemClassname = __webpack_require__(/*! bem-classname */ 377);
+	var _bemClassname = __webpack_require__(/*! bem-classname */ 380);
 	
 	var _bemClassname2 = _interopRequireDefault(_bemClassname);
 	
@@ -63723,7 +64013,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            ) : _react2.default.createElement(
 	                'span',
 	                null,
-	                'Book'
+	                'Add Event'
 	            );
 	        }
 	    }, {
@@ -63776,884 +64066,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = Slot;
 
 /***/ }),
-/* 383 */
-/*!****************************************!*\
-  !*** ./src/components/body/Gallery.js ***!
-  \****************************************/
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _class, _temp;
-	
-	var _react = __webpack_require__(/*! react */ 3);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	var _propTypes = __webpack_require__(/*! prop-types */ 125);
-	
-	var _propTypes2 = _interopRequireDefault(_propTypes);
-	
-	var _icons = __webpack_require__(/*! ./icons */ 384);
-	
-	var _icons2 = _interopRequireDefault(_icons);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var Gallery = (_temp = _class = function (_Component) {
-	  _inherits(Gallery, _Component);
-	
-	  function Gallery(props) {
-	    _classCallCheck(this, Gallery);
-	
-	    var _this = _possibleConstructorReturn(this, (Gallery.__proto__ || Object.getPrototypeOf(Gallery)).call(this, props));
-	
-	    _this.state = {
-	      playing: false,
-	      playingUrl: null,
-	      audio: null,
-	      currentTime: 0
-	    };
-	    return _this;
-	  }
-	
-	  _createClass(Gallery, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      this.interval = setInterval(this.isPlaying.bind(this), 8000);
-	    }
-	  }, {
-	    key: 'componentWillUnmount',
-	    value: function componentWillUnmount() {
-	      clearInterval(this.interval);
-	    }
-	  }, {
-	    key: 'isPlaying',
-	    value: function isPlaying() {
-	      if (!this.state.playing) {
-	        return false;
-	      } else if (this.state.audio && this.state.audio.currentTime >= 30) {
-	        this.resetPlayer();
-	        return false;
-	      } else {
-	        return true;
-	      }
-	    }
-	  }, {
-	    key: 'handlePlayClick',
-	    value: function handlePlayClick(previewUrl) {
-	      if (this.isPlaying()) {
-	        if (this.state.playingUrl === previewUrl) {
-	          this.pausePlayback();
-	        } else {
-	          this.resetPlayer();
-	          this.startPlaying(previewUrl);
-	        }
-	      } else {
-	        this.startPlaying(previewUrl);
-	      }
-	    }
-	  }, {
-	    key: 'pausePlayback',
-	    value: function pausePlayback() {
-	      this.state.audio.pause();
-	      this.setState({
-	        playing: false
-	      });
-	    }
-	  }, {
-	    key: 'resetPlayer',
-	    value: function resetPlayer() {
-	      var audio = this.state.audio;
-	      audio.pause();
-	      audio.currentTime = 0;
-	      audio.src = null;
-	      this.setState({
-	        playing: false,
-	        playingUrl: null,
-	        audio: audio
-	      });
-	    }
-	  }, {
-	    key: 'startPlaying',
-	    value: function startPlaying(url) {
-	      if (this.state.playingUrl === url) {
-	        this.restartPlayback();
-	      } else {
-	        var audio = this.state.audio ? this.state.audio : new Audio(url);
-	        audio.src = url;
-	        audio.currentTime = 0;
-	        this.setState({
-	          playing: true,
-	          playingUrl: url,
-	          audio: audio
-	        });
-	        audio.play();
-	      }
-	    }
-	  }, {
-	    key: 'restartPlayback',
-	    value: function restartPlayback() {
-	      this.state.audio.play();
-	      this.setState({
-	        playing: true
-	      });
-	    }
-	  }, {
-	    key: 'displayIcon',
-	    value: function displayIcon(url) {
-	      if (this.state.playing && this.state.playingUrl === url) {
-	        return _react2.default.createElement(_icons2.default, null);
-	      } else {
-	        return '\u25B6';
-	      }
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var _this2 = this;
-	
-	      return _react2.default.createElement(
-	        'ul',
-	        { className: 'Gallery list pl0' },
-	        this.props.tracks && this.props.tracks.map(function (track) {
-	          return _react2.default.createElement(
-	            'li',
-	            {
-	              key: track.id,
-	              className: 'track fl-ns w-25-ns' },
-	            _react2.default.createElement(
-	              'div',
-	              { className: 'relative ma1 aspect-ratio-ns aspect-ratio--1x1-ns' },
-	              _react2.default.createElement('img', {
-	                className: 'album-art',
-	                alt: track.name + ' album art',
-	                src: track.album.images[1].url,
-	                onClick: function onClick() {
-	                  return _this2.handlePlayClick(track.preview_url);
-	                } }),
-	              _react2.default.createElement(
-	                'div',
-	                { className: 'playButton absolute bg-black white br-100 w2 h2 nt3 nb3 nl3 nr3 pt2 pl1 pointer',
-	                  style: { top: '50%', left: '50%' },
-	                  onClick: function onClick() {
-	                    return _this2.handlePlayClick(track.preview_url);
-	                  } },
-	                _this2.displayIcon(track.preview_url)
-	              ),
-	              _react2.default.createElement(
-	                'span',
-	                {
-	                  className: 'track-name db f7 small w-100 tc bg-black o-70 absolute top-0',
-	                  style: { fontSize: '0.6rem' } },
-	                track.name
-	              )
-	            )
-	          );
-	        })
-	      );
-	    }
-	  }]);
-	
-	  return Gallery;
-	}(_react.Component), _class.propTypes = {
-	  tracks: _propTypes2.default.array
-	}, _temp);
-	
-	
-	Gallery.defaultProps = {
-	  tracks: []
-	};
-	
-	exports.default = Gallery;
-
-/***/ }),
-/* 384 */
-/*!**************************************!*\
-  !*** ./src/components/body/icons.js ***!
-  \**************************************/
-/***/ (function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _react = __webpack_require__(/*! react */ 3);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	var PauseIcon = function PauseIcon() {
-	  return _react2.default.createElement(
-	    "svg",
-	    { className: "Icon PauseIcon ", viewBox: "0 0 100 100" },
-	    _react2.default.createElement(
-	      "g",
-	      { className: "Icon-group" },
-	      _react2.default.createElement("rect", { className: "Icon-shape", x: "53", y: "0", width: "16", height: "58", fill: "white" }),
-	      _react2.default.createElement("rect", { className: "Icon-shape", x: "17", y: "0", width: "16", height: "58", fill: "white" })
-	    )
-	  );
-	};
-	
-	exports.default = PauseIcon;
-
-/***/ }),
-/* 385 */
-/*!************************************!*\
-  !*** ./~/glyphicons/glyphicons.js ***!
-  \************************************/
-/***/ (function(module, exports) {
-
-	module.exports = {
-		ain: 'ᴥ',
-		airplane: '✈️',
-		alarm: '⏰',
-		alien: '👽',
-		anchor: '⚓',
-		ant: '🐜',
-		apple: '🍎',
-		appleGreen: '🍏',
-		appleRed: '🍎',
-		aquarius: '♒',
-		aries: '♈',
-		arrowW: '←',
-		arrowL: '←',
-		arrowNW: '↖',
-		arrowN: '↑',
-		arrowU: '↑',
-		arrowNE: '↗',
-		arrowE: '→',
-		arrowR: '→',
-		arrowSE: '↘',
-		arrowS: '↓',
-		arrowD: '↓',
-		arrowSW: '↙',
-		arrowTriD: '▼',
-		arrowTriL: '◀',
-		arrowTriR: '▶',
-		arrowTriU: '▲',
-		arrowTriDoubleD: '⏬',
-		arrowTriDoubleL: '⏪',
-		arrowTriDoubleLEnd: '⏮',
-		arrowTriDoubleR: '⏩',
-		arrowTriDoubleREnd: '⏮',
-		arrowTriDoubleU: '⏫',
-		arrowTriSmD: '🔽',
-		arrowTriSmU: '🔼',
-		arrowCircleL: '↶',
-		arrowCircleR: '↷',
-		arrowCircleFull: '⟳',
-		arrowDoubleL: '«',
-		arrowDoubleR: '»',
-		arrowRefresh: '↺',
-		arrowCompassR: '➢',
-		arrowCompassInvertedR: '➣',
-		attachment: '📎',
-		aubergine: '🍆',
-		avocado: '🥑',
-		balloon: '🎈',
-		balloonSpeech: '💬',
-		balloonThought: '💭',
-		bank: '🏛',
-		banknote: '💵',
-		banknoteEuro: '💶',
-		banknotePound: '💷',
-		banknoteYen: '💴',
-		banana: '🍌',
-		bang: '💥',
-		bat: '🦇',
-		bearFace: '🐻',
-		bee: '🐝',
-		bell: '🔔',
-		bellCancel: '🔕',
-		bomb: '💣',
-		book: '📕',
-		books: '📚',
-		bookBlue: '📘',
-		bookGreen: '📗',
-		bookOpen: '📖',
-		bookOrange: '📙',
-		bookRed: '📕',
-		bookmark: '🔖',
-		bookmarks: '📑',
-		bird: '🐦',
-		birthdayCake: '🎂',
-		bread: '🍞',
-		bride: '👰',
-		bug: '🐛',
-		bus: '🚍',
-		butterfly: '🦋',
-		burrito: '🌯',
-		cactus: '🌵',
-		cake: '🍰',
-		calendar: '📅',
-		calendarSpiral: '🗓',
-		calendarTearOff: '📆',
-		camel: '🐫',
-		camelDromedary: '🐪',
-		camelBactrian: '🐫',
-		cancel: '✘',
-		cancer: '♋',
-		candle: '🕯',
-		candy: '🍬',
-		capricorn: '♑',
-		car: '🚘',
-		carouselHorse: '🎠',
-		carrot: '🥕',
-		castle: '🏰',
-		cat: '🐈',
-		catFace: '🐱',
-		caterpillar: '🐛',
-		chartBar: '📊',
-		chartDown: '',
-		chartUp: '📈',
-		check: '√',
-		checkHeavy: '✔️',
-		checkHeavyWhite: '✅',
-		checkBallot: '☑',
-		checkeredFlag: '🏁',
-		cheese: '🧀',
-		cherry: '🍒',
-		chessKingB: '♚',
-		chessQueenB: '♛',
-		chessRookB: '♜',
-		chessBishopB: '♝',
-		chessNightB: '♞',
-		chessPawnB: '♟',
-		chessKingW: '♔',
-		chessQueenW: '♕',
-		chessRookW: '♖',
-		chessBishopW: '♗',
-		chessNightW: '♘',
-		chessPawnW: '♘',
-		chestnut: '🌰',
-		chick: '🐤',
-		chickFront: '🐥',
-		chicken: '🐔',
-		chipmunk: '🐿',
-		chocolate: '🍫',
-		church: '⛪',
-		city: '🏙',
-		cityDusk: '🌆',
-		citySunset: '🌇',
-		circleBlackWhite: '◑',
-		circus: '🎪',
-		clover: '☘',
-		clown: '🤡',
-		cloud: '☁',
-		clipboard: '📋',
-		coffee: '☕',
-		coffin: '⚰',
-		comet: '☄',
-		compression: '🗜',
-		controlKnobs: '🎛',
-		convenienceStore: '🏪',
-		cookie: '🍪',
-		copyright: '©',
-		cowFace: '🐮',
-		creditCard: '💳',
-		crocodile: '🐊',
-		cross: '×',
-		crossHeavy: '✖️',
-		crossedFlags: '🎌',
-		crossedSwords: '⚔',
-		crown: '♕',
-		cucumber: '🥒',
-		dagger: '🗡',
-		deer: '🦌',
-		departmentStore: '🏬',
-		diamond: '💎',
-		dog: '🐕',
-		dogFace: '🐶',
-		dolphin: '🐬',
-		donut: '🍩',
-		door: '🚪',
-		dot: '•',
-		dragon: '🐉',
-		droplet: '💧',
-		dress: '👗',
-		drums: '🥁',
-		duck: '🦆',
-		dumpling: '🥟',
-		eagle: '🦅',
-		edit: '✎',
-		egg: '🥚',
-		eightball: '➑',
-		elephant: '🐘',
-		email: '📧',
-		eye: '👁',
-		eyeglasses: '👓',
-		eyes: '👀',
-		fax: '📠',
-		female: '♀',
-		females: '⚢',
-		ferriswheel: '🎡',
-		ferry: '⛴',
-		filmCamera: '🎥',
-		filmFrames: '🎞',
-		filmProjector: '📽',
-		fish: '🐟',
-		fishTropical: '🐠',
-		fishingPole: '🎣',
-		fire: '🔥',
-		fireworks: '🎆',
-		flames: '🔥',
-		flower: '⚘',
-		flowers: '💐',
-		flowerRose: '🌹',
-		flowerSun: '🌻',
-		flowerSymbol: '߷',
-		flowerTulip: '🌷',
-		forkKnife: '🍴',
-		forkKnifePlate: '🍽',
-		fountain: '⛲',
-		fourLeafClover: '🍀',
-		foxFace: '🦊',
-		framedPicture: '🖼',
-		fries: '🍟',
-		frogFace: '🐸',
-		gear: '⚙',
-		gemini: '♊',
-		ghost: '👻',
-		gift: '🎁',
-		globe: '🌎',
-		globeAmerica: '🌎',
-		globeAsiaAus: '🌏',
-		globeEurAfr: '🌍',
-		globeMeridians: '🌐',
-		goat: '🐐',
-		gorilla: '🦍',
-		grapes: '🍇',
-		groom: '🤵',
-		guitar: '🎸',
-		halloween: '🎃',
-		hamburger: '🍔',
-		hammer: '🔨',
-		hammerPick: '⚒',
-		hammerSickle: '☭',
-		hammerWrench: '🛠',
-		hamsterFace: '🐹',
-		handVictory: '✌',
-		handshake: '🤝',
-		handwriting: '✍',
-		hatching: '🐣',
-		heart: '❤️',
-		heartArrow: '💘',
-		heartBeating: '💓',
-		heartBlue: '💙',
-		heartBroken: '💔',
-		heartDeco: '💟',
-		heartFlower: '❦',
-		heartFlowerL: '❧',
-		heartFlowerR: '☙',
-		heartGreen: '💚',
-		heartGrowing: '💗',
-		heartLight: '♥',
-		heartManMan: '👨‍❤️‍👨',
-		heartPurple: '💜',
-		heartRibbon: '💝',
-		heartSmile: '😍',
-		heartSparkling: '💖',
-		heartUpsideDown: 'ᜊ',
-		heartWomanWoman: '👩‍❤️‍👩',
-		heartYellow: '💛',
-		hearts: '💕',
-		heartsRevolving: '💞',
-		herb: '🌿',
-		hole: '🕳',
-		home: '🏠',
-		homes: '🏘',
-		homeGarden: '🏡',
-		honey: '🍯',
-		horn: '📯',
-		horse: '🐎',
-		horseFace: '🐴',
-		horseRacing: '🏇',
-		hot: '🔥',
-		hotdog: '🌭',
-		hotPepper: '🌶',
-		hotel: '🏨',
-		hotsprings: '♨',
-		hourglass: '⌛',
-		hourglassRunning: '⏳',
-		iceCream: '🍨',
-		iceCreamSoft: '🍦',
-		iceSkate: '⛸',
-		jeans: '👖',
-		joystick: '🕹',
-		joypad: '🎮',
-		key: '🔑',
-		keyOld: '🗝',
-		keyboard: '⌨',
-		kiwi: '🥝',
-		koala: '🐨',
-		label: '🏷',
-		ladybird: '🐞',
-		leaf: '🍂',
-		leafMaple: '🍁',
-		leafWind: '🍃',
-		lemon: '🍋',
-		leo: '♌',
-		leopard: '🐆',
-		levelSlider: '🎚',
-		libra: '♎',
-		link: '🔗',
-		lionFace: '🦁',
-		lizard: '🦎',
-		lock: '🔒',
-		lockClosed: '🔒',
-		lockClosedWithKey: '🔐',
-		lockOpen: '🔓',
-		love: '💕',
-		loveCouple: '💑',
-		loveLetter: '💌',
-		loveHotel: '🏩',
-		mail: '✉',
-		male: '♂',
-		males: '⚣',
-		man: '👨',
-		mansShoe: '👞',
-		melon: '🍈',
-		menu: '☰',
-		magnifyingGlass: '🔍',
-		map: '🗺',
-		memo: '📝',
-		microphone: '🎙',
-		mobilePhone: '📱',
-		monkey: '🐒',
-		monkeyFace: '🐵',
-		monkeyNoEvilHear: '🙉',
-		monkeyNoEvilSee: '🙈',
-		monkeyNoEvilSpeak: '🙊',
-		moon: '○',
-		moonNew: '●',
-		moonFirst: '◐',
-		moonFull: '○',
-		moonThird: '◑',
-		mosque: '🕌',
-		motorboat: '🛥',
-		mountain: '⛰',
-		mountFuji: '🗻',
-		mouse: '🐁',
-		mouseFace: '🐭',
-		mushroom: '🍄',
-		music: '🎶',
-		musicalKeyboard: '🎹',
-		musicalNote: '♪',
-		musicalNoteDouble: '♫',
-		nameBadge: '📛',
-		neckTie: '👔',
-		newspaper: '📰',
-		noEntry: '🚫',
-		noEntryUnder18: '🔞',
-		nut: '🌰',
-		nutAndBolt: '🔩',
-		octopus: '🐙',
-		office: '🏢',
-		ohm: 'Ω',
-		ok: '✔',
-		oneHalf: '½',
-		oneThird: '⅓',
-		oneFourth: '¼',
-		oneFifth: '⅕',
-		oneSixth: '⅙',
-		oneSeventh: '⅐',
-		oneEight: '⅛',
-		ophiuchus: '⛎',
-		owl: '🦉',
-		pageCurl: '📃',
-		pancakes: '🥞',
-		pandaFace: '🐼',
-		paperclip: '📎',
-		pause: '⏸',
-		peace: '☮',
-		peaceDove: '🕊',
-		peach: '🍑',
-		pear: '🍐',
-		pencil: '✎',
-		penguin: '🐧',
-		phone: '☎',
-		phoneWhite: '☏',
-		pick: '⛏',
-		pig: '🐖',
-		pigFace: '🐷',
-		pigNose: '🐽',
-		pileOfPoo: '💩',
-		pill: '💊',
-		pin: '📌',
-		pinRound: '📍',
-		pineapple: '🍍',
-		pisces: '♓',
-		pistol: '🔫',
-		play: '⏵',
-		plus: '✚',
-		pointL: '☚',
-		pointR: '☛',
-		pointU: '☝',
-		pointD: '☟',
-		popcorn: '🍿',
-		potato: '🥔',
-		prayerBeads: '📿',
-		pregnant: '🤰',
-		priceTag: '🏷',
-		printer: '🖨',
-		question: '❓',
-		rabbit: '🐇',
-		rabbitFace: '🐰',
-		radio: '📻',
-		rainbow: '🌈',
-		rat: '🐀',
-		record: '⏺',
-		recycling: '♻',
-		registered: '®',
-		rhinocerus: '🦏',
-		ribbon: '🎀',
-		ring: '💍',
-		rooster: '🐓',
-		rollercoaster: '🎢',
-		ruler: '📏',
-		rulerTriangular: '📐',
-		sagittarius: '♐',
-		sailboat: '⛵',
-		satellite: '🛰',
-		satelliteAntenna: '📡',
-		saxophone: '🎷',
-		scales: '⚖',
-		scorpius: '♏',
-		school: '🏫',
-		scissors: '✂',
-		scroll: '📜',
-		seedling: '🌱',
-		shamrock: '☘',
-		shark: '🦈',
-		sheep: '🐑',
-		shield: '🛡',
-		ship: '🚢',
-		shipPassengers: '🛳',
-		shirt: '👕',
-		shoppingBags: '🛍',
-		shoppingTrolley: '🛒',
-		shrimp: '🦐',
-		skull: '💀',
-		skullAndBones: '☠',
-		smile: '☺',
-		smoking: '🚬',
-		smokingForbidden: '🚭',
-		snail: '🐌',
-		snake: '🐍',
-		snow: '❆',
-		snowman: '☃',
-		snowmanWithoutSnow: '⛄',
-		snowCappedMountain: '🏔',
-		spaghetti: '🍝',
-		speaker: '🔈',
-		speakerCancel: '🔇',
-		speakerSound: '🔉',
-		speakerSoundLoud: '🔊',
-		speedboat: '🚤',
-		spider: '🕷',
-		spiderWeb: '🕸',
-		spoon: '🥄',
-		squid: '🦑',
-		star: '★',
-		starOpen: '☆',
-		starBorder: '✭',
-		starCircle: '✪',
-		starCircleSmall: '⍟',
-		starCrescent: '☪',
-		starDavid: '✡',
-		starScience: '⚝',
-		starTopo: '❉',
-		starDeco: '❋',
-		starDeco2: '✺',
-		starDeco3: '✹',
-		starFalling: '🌠',
-		starShining: '🌟',
-		star3D: '✰',
-		stop: '⏹',
-		stopwatch: '⏱',
-		strawberry: '🍓',
-		suitClubs: '♣',
-		suitDiamonds: '♦',
-		suitHearts: '♥',
-		suitSpades: '♠',
-		sun: '☀',
-		sunglasses: '🕶',
-		sunrise: '🌅',
-		sunriseMountain: '🌄',
-		sunriseCity: '🌇',
-		sushi: '🍣',
-		synagogue: '🕍',
-		taco: '🌮',
-		tangerine: '🍊',
-		taurus: '♉',
-		telephone: '☎️',
-		telephoneReceiver: '📞',
-		television: '📺',
-		thermometer: '🌡',
-		ticket: '🎫',
-		ticketAdmission: '🎟',
-		tigerFace: '🐯',
-		tomato: '🍅',
-		topHat: '🎩',
-		tractor: '🚜',
-		trademark: '™',
-		tree: '🌳',
-		treeChristmas: '🎄',
-		treePalm: '🌴',
-		treePine: '🌲',
-		treeTanabata: '🎋',
-		tricolon: '⁝',
-		trumpet: '🎺',
-		turkey: '🦃',
-		turtle: '🐢',
-		umbrella: '☂',
-		umbrellaRain: '☔',
-		unicorn: '🦄',
-		video: '',
-		videoCamera: '📹',
-		videoCassette: '📼',
-		videoGame: '🎮',
-		violin: '🎻',
-		virgo: '♍',
-		vulcano: '🌋',
-		warning: '⚠️',
-		wastebasket: '🗑',
-		watch: '⌚',
-		watermelon: '🍉',
-		waterWave: '🌊',
-		wedding: '💒',
-		whale: '🐋',
-		wheelchair: '♿',
-		wolfFace: '🐺',
-		woman: '👩',
-		womansHat: '👒',
-		womansClothes: '👚',
-		womansBoots: '👢',
-		womansShoes: '👠',
-		wrench: '🔧',
-		yinyang: '☯',
-	}
-
-
-/***/ }),
-/* 386 */
-/*!****************************************!*\
-  !*** ./src/components/body/Profile.js ***!
-  \****************************************/
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _class, _temp;
-	
-	var _react = __webpack_require__(/*! react */ 3);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	var _propTypes = __webpack_require__(/*! prop-types */ 125);
-	
-	var _propTypes2 = _interopRequireDefault(_propTypes);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	//import data from '../test/fixtures/beatles';
-	
-	var Profile = (_temp = _class = function (_Component) {
-	  _inherits(Profile, _Component);
-	
-	  function Profile() {
-	    _classCallCheck(this, Profile);
-	
-	    return _possibleConstructorReturn(this, (Profile.__proto__ || Object.getPrototypeOf(Profile)).apply(this, arguments));
-	  }
-	
-	  _createClass(Profile, [{
-	    key: 'render',
-	    value: function render() {
-	      var dummyArtist = { name: '', followers: { total: '' }, images: [{ url: '' }], genres: [] };
-	      var artist = this.props.artist ? this.props.artist : dummyArtist;
-	      artist = data.artists.items[0];
-	      var genres = artist.genres;
-	      return _react2.default.createElement(
-	        'div',
-	        { className: 'profile-wrapper cf tl' },
-	        artist !== dummyArtist && _react2.default.createElement(
-	          'div',
-	          { className: 'profile' },
-	          _react2.default.createElement('img', {
-	            src: artist.images[0].url,
-	            alt: '{artist.name} Profile',
-	            id: 'profile-img',
-	            className: 'fl w4 h4 br-100 ba bw1 b--white' }),
-	          _react2.default.createElement(
-	            'div',
-	            { className: 'artist-info fl border-box pa3 h4' },
-	            _react2.default.createElement(
-	              'div',
-	              { id: 'artist-name', className: 'f3 pb2' },
-	              artist.name
-	            ),
-	            _react2.default.createElement(
-	              'div',
-	              { id: 'artist-follower-count', className: '' },
-	              artist.followers.total,
-	              ' followers'
-	            ),
-	            _react2.default.createElement(
-	              'div',
-	              { id: 'artist-genres', className: '' },
-	              genres.length > 0 && genres.map(function (genre, k) {
-	                return _react2.default.createElement(
-	                  'span',
-	                  { key: k },
-	                  genre
-	                );
-	              }).reduce(function (prev, curr) {
-	                return [prev, ', ', curr];
-	              })
-	            )
-	          )
-	        )
-	      );
-	    }
-	  }]);
-	
-	  return Profile;
-	}(_react.Component), _class.propTypes = {
-	  artist: _propTypes2.default.object
-	}, _temp);
-	exports.default = Profile;
-
-/***/ }),
 /* 387 */
 /*!****************************************!*\
   !*** ./src/components/body/spotify.js ***!
@@ -64662,79 +64074,200 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
+	var _react = __webpack_require__(/*! react */ 3);
 	
-	var _apiUtils = __webpack_require__(/*! ./apiUtils */ 388);
+	var _react2 = _interopRequireDefault(_react);
 	
-	var _apiUtils2 = _interopRequireDefault(_apiUtils);
+	var _queryString = __webpack_require__(/*! query-string */ 348);
 	
+	var _queryString2 = _interopRequireDefault(_queryString);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	var BASE_URL = 'https://api.spotify.com/v1';
-	
-	var Spotify = {
-	  getSearchUrl: function getSearchUrl(query) {
-	    return BASE_URL + '/search?q=' + encodeURI(query) + '&type=artist&limit=1';
-	  },
-	
-	  getTracksUrl: function getTracksUrl(artistId) {
-	    return BASE_URL + '/artists/' + artistId + '/top-tracks?country=US&';
-	  },
-	
-	  search: function search(query) {
-	    var searchUrl = Spotify.getSearchUrl(query);
-	    return fetch(searchUrl, {
-	      method: 'GET',
-	      headers: {
-	        'Content-Type': 'application/json'
-	      }
-	    }).then(_apiUtils2.default.checkStatus).then(function (response) {
-	      return response.json();
-	    });
-	  },
-	
-	  getTracks: function getTracks(artistId) {
-	    var searchUrl = Spotify.getTracksUrl(artistId);
-	    return fetch(searchUrl, {
-	      method: 'GET',
-	      headers: {
-	        'Content-Type': 'application/json'
-	      }
-	    }).then(_apiUtils2.default.checkStatus).then(function (response) {
-	      return response.json();
-	    });
-	  }
-	};
-	
-	exports.default = Spotify;
 
 /***/ }),
 /* 388 */
-/*!*****************************************!*\
-  !*** ./src/components/body/apiUtils.js ***!
-  \*****************************************/
-/***/ (function(module, exports) {
+/*!******************************************!*\
+  !*** ./~/react-load-script/lib/index.js ***!
+  \******************************************/
+/***/ (function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	var apiUtils = {
-	  checkStatus: function checkStatus(response) {
-	    if (response.status >= 200 && response.status < 300) {
-	      return response;
-	    } else {
-	      var error = new Error(response.statusText);
-	      error.response = response;
-	      throw error;
-	    }
-	  }
-	};
 	
-	exports.default = apiUtils;
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(/*! react */ 3);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _propTypes = __webpack_require__(/*! prop-types */ 125);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Script = function (_React$Component) {
+	  _inherits(Script, _React$Component);
+	
+	  // A dictionary mapping script URL to a boolean value indicating if the script
+	  // has failed to load.
+	
+	
+	  // A dictionary mapping script URLs to a dictionary mapping
+	  // component key to component for all components that are waiting
+	  // for the script to load.
+	  function Script(props) {
+	    _classCallCheck(this, Script);
+	
+	    var _this = _possibleConstructorReturn(this, (Script.__proto__ || Object.getPrototypeOf(Script)).call(this, props));
+	
+	    _this.scriptLoaderId = 'id' + _this.constructor.idCount++; // eslint-disable-line space-unary-ops, no-plusplus
+	    return _this;
+	  }
+	
+	  // A counter used to generate a unique id for each component that uses
+	  // ScriptLoaderMixin.
+	
+	
+	  // A dictionary mapping script URL to a boolean value indicating if the script
+	  // has already been loaded.
+	
+	
+	  _createClass(Script, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      var _props = this.props,
+	          onError = _props.onError,
+	          onLoad = _props.onLoad,
+	          url = _props.url;
+	
+	
+	      if (this.constructor.loadedScripts[url]) {
+	        onLoad();
+	        return;
+	      }
+	
+	      if (this.constructor.erroredScripts[url]) {
+	        onError();
+	        return;
+	      }
+	
+	      // If the script is loading, add the component to the script's observers
+	      // and return. Otherwise, initialize the script's observers with the component
+	      // and start loading the script.
+	      if (this.constructor.scriptObservers[url]) {
+	        this.constructor.scriptObservers[url][this.scriptLoaderId] = this.props;
+	        return;
+	      }
+	
+	      this.constructor.scriptObservers[url] = _defineProperty({}, this.scriptLoaderId, this.props);
+	
+	      this.createScript();
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      var url = this.props.url;
+	
+	      var observers = this.constructor.scriptObservers[url];
+	
+	      // If the component is waiting for the script to load, remove the
+	      // component from the script's observers before unmounting the component.
+	      if (observers) {
+	        delete observers[this.scriptLoaderId];
+	      }
+	    }
+	  }, {
+	    key: 'createScript',
+	    value: function createScript() {
+	      var _this2 = this;
+	
+	      var _props2 = this.props,
+	          onCreate = _props2.onCreate,
+	          url = _props2.url,
+	          attributes = _props2.attributes;
+	
+	      var script = document.createElement('script');
+	
+	      onCreate();
+	
+	      // add 'data-' or non standard attributes to the script tag
+	      if (attributes) {
+	        Object.keys(attributes).forEach(function (prop) {
+	          return script.setAttribute(prop, attributes[prop]);
+	        });
+	      }
+	
+	      script.src = url;
+	
+	      // default async to true if not set with custom attributes
+	      if (!script.hasAttribute('async')) {
+	        script.async = 1;
+	      }
+	
+	      var callObserverFuncAndRemoveObserver = function callObserverFuncAndRemoveObserver(shouldRemoveObserver) {
+	        var observers = _this2.constructor.scriptObservers[url];
+	        Object.keys(observers).forEach(function (key) {
+	          if (shouldRemoveObserver(observers[key])) {
+	            delete _this2.constructor.scriptObservers[url][_this2.scriptLoaderId];
+	          }
+	        });
+	      };
+	      script.onload = function () {
+	        _this2.constructor.loadedScripts[url] = true;
+	        callObserverFuncAndRemoveObserver(function (observer) {
+	          observer.onLoad();
+	          return true;
+	        });
+	      };
+	
+	      script.onerror = function () {
+	        _this2.constructor.erroredScripts[url] = true;
+	        callObserverFuncAndRemoveObserver(function (observer) {
+	          observer.onError();
+	          return true;
+	        });
+	      };
+	
+	      document.body.appendChild(script);
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return null;
+	    }
+	  }]);
+	
+	  return Script;
+	}(_react2.default.Component);
+	
+	Script.propTypes = {
+	  attributes: _propTypes.PropTypes.object, // eslint-disable-line react/forbid-prop-types
+	  onCreate: _propTypes.PropTypes.func,
+	  onError: _propTypes.PropTypes.func.isRequired,
+	  onLoad: _propTypes.PropTypes.func.isRequired,
+	  url: _propTypes.PropTypes.string.isRequired
+	};
+	Script.defaultProps = {
+	  attributes: {},
+	  onCreate: function onCreate() {},
+	  onError: function onError() {},
+	  onLoad: function onLoad() {} };
+	Script.scriptObservers = {};
+	Script.loadedScripts = {};
+	Script.erroredScripts = {};
+	Script.idCount = 0;
+	exports.default = Script;
+	module.exports = exports['default'];
 
 /***/ }),
 /* 389 */
@@ -64764,7 +64297,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _util = __webpack_require__(/*! ../util */ 346);
 	
-	var _Day = __webpack_require__(/*! ./Day */ 376);
+	var _Day = __webpack_require__(/*! ./Day */ 379);
 	
 	var _Day2 = _interopRequireDefault(_Day);
 	

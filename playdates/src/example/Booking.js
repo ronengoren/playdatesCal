@@ -150,7 +150,7 @@ class Booking extends React.Component {
 
                                     return (
                                       <div>
-                                        <h1>asdfasdf</h1>
+                                        <h1></h1>
                                         </div>
                                   )
                                 }
