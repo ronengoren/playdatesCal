@@ -24,7 +24,8 @@ Appointment Calendar - ReactJS/Ruby on Rails/Spotify API/MusixMatch API
 
 ## Deployment
 
-Add additional notes about how to deploy this on a live system
+This site was built using [Heroku](https://playdates-calendar.herokuapp.com/)
+  PLEASE ENABLE CROSS-ORIGIN RESOURCE SHARING
 
 ## Built With
 
