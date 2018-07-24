@@ -1,7 +1,4 @@
-![image](https://user-images.githubusercontent.com/18123962/43118142-856bc1be-8ede-11e8-87ff-8c396a9ca595.png)![upload-fd582460-9142-11e6-8c51-694460b88e11](https://user-images.githubusercontent.com/18123962/43119279-c5f2af2c-8ee3-11e8-8a62-8426e77e262e.png)
-![latest](https://user-images.githubusercontent.com/18123962/43119280-c5fe78d4-8ee3-11e8-8e32-1eeba6c0ad5f.jpg)
-
-
+![image](https://user-images.githubusercontent.com/18123962/43118142-856bc1be-8ede-11e8-87ff-8c396a9ca595.png)
 
 This site was built using [Heroku](https://playdates-calendar.herokuapp.com/)
   PLEASE ENABLE CROSS-ORIGIN RESOURCE SHARING
