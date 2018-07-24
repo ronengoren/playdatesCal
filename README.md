@@ -9,8 +9,8 @@ This site was built using [Heroku](https://playdates-calendar.herokuapp.com/)
 
 Appointment Calendar - ReactJS/Ruby on Rails/Spotify API/MusixMatch API
 
-##### * User authentication
-> Spotify API
+##### 
+> * User authentication - Spotify API
 
 ##### * Yearly view in a month/week/day layout - using Moment
 
