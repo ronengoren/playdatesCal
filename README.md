@@ -1,6 +1,6 @@
-# Project Title
+# PLAYDates
 
-One Paragraph of project description goes here
+Appointment Calendar - ReactJS/Ruby on Rails/Spotify API/MusixMatch API
 
 ## Getting Started
 
